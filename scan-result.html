@@ -1,72 +1,196 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Card Scan — Card Message System</title>
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Card — Card Message System</title>
+
+    <link rel="stylesheet" href="style.css">
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 </head>
+
 
 <body>
 
-    <h1>Card Found</h1>
+    <nav>
 
-    <p id="status">Checking card...</p>
+        <strong>🪪 Card Message System</strong>
+
+        <div class="nav-links">
+
+            <a
+                class="button secondary"
+                href="index.html"
+            >
+                Home
+            </a>
+
+        </div>
+
+    </nav>
+
+
+    <main>
+
+        <section
+            class="panel center"
+            style="max-width:600px;margin:40px auto;"
+        >
+
+            <h1>Loading Card...</h1>
+
+            <p id="status">
+                Checking card...
+            </p>
+
+        </section>
+
+    </main>
+
 
     <script src="config.js"></script>
     <script src="supabase.js"></script>
 
+
     <script>
-        const params = new URLSearchParams(window.location.search);
-        const code = params.get("code");
 
-        const status = document.getElementById("status");
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
 
-        async function handleCard() {
+
+        const code =
+            params.get("code");
+
+
+        const status =
+            document.getElementById("status");
+
+
+
+        async function openCard() {
+
             if (!code) {
-                status.textContent = "No card code found.";
+
+                status.textContent =
+                    "No card code was provided.";
+
                 return;
+
             }
+
+
+
+            /*
+             * First check whether someone is logged in.
+             */
 
             const {
                 data: { user }
-            } = await supabaseClient.auth.getUser();
+            } =
+                await supabaseClient.auth.getUser();
 
-            const { data: card, error } =
+
+
+            /*
+             * If nobody is logged in,
+             * go directly to the public card.
+             *
+             * We do NOT query the protected
+             * cards table first.
+             */
+
+            if (!user) {
+
+                window.location.href =
+                    "public-card.html?code=" +
+                    encodeURIComponent(code);
+
+                return;
+
+            }
+
+
+
+            /*
+             * A logged-in user can potentially
+             * own the card, so check ownership.
+             */
+
+            const {
+                data: card,
+                error
+            } =
                 await supabaseClient
                     .from("cards")
-                    .select("id, card_code, owner_id")
-                    .eq("card_code", code)
+                    .select(
+                        "id, card_code, owner_id"
+                    )
+                    .eq(
+                        "card_code",
+                        code
+                    )
                     .maybeSingle();
 
-            if (error) {
-                status.textContent =
-                    "Could not find card: " + error.message;
-                return;
-            }
+
+
+            /*
+             * If the logged-in user doesn't own it,
+             * show the public version instead.
+             */
 
             if (!card) {
-                status.textContent = "Card does not exist.";
+
+                window.location.href =
+                    "public-card.html?code=" +
+                    encodeURIComponent(code);
+
                 return;
+
             }
 
-            if (user && card.owner_id === user.id) {
+
+
+            if (
+                card.owner_id === user.id
+            ) {
+
                 window.location.href =
                     "card.html?id=" +
                     encodeURIComponent(card.id);
 
                 return;
+
             }
+
+
+
+            /*
+             * Someone else's card.
+             */
 
             window.location.href =
                 "public-card.html?code=" +
-                encodeURIComponent(card.card_code);
+                encodeURIComponent(code);
+
         }
 
-        handleCard();
+
+
+        openCard();
+
     </script>
 
 </body>
+
 </html>
