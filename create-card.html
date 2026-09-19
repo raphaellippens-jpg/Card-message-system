@@ -1,111 +1,314 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Card Message System — Create Card</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Create Card — Card Message System</title>
+
+    <link rel="stylesheet" href="style.css">
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
 
-    <h1>Create a New Card</h1>
+    <nav>
 
-    <p>
-        This creates a completely new card linked to your account.
-        Your old card's data will NOT be copied.
-    </p>
+        <strong>🪪 Card Message System</strong>
 
-    <button id="createButton">
-        Create Card
-    </button>
+        <div class="nav-links">
 
-    <p id="status"></p>
+            <a
+                class="button secondary"
+                href="dashboard.html"
+            >
+                Dashboard
+            </a>
 
-    <button id="backButton">
-        Back to Dashboard
-    </button>
+        </div>
+
+    </nav>
+
+
+    <main>
+
+        <section
+            class="panel center"
+            style="max-width:600px;margin:50px auto;"
+        >
+
+            <h1>🪪 Create a Card</h1>
+
+            <p>
+                Create a completely new card connected
+                to your account.
+            </p>
+
+            <p>
+                Your existing cards and their data
+                will <strong>not</strong> be copied.
+            </p>
+
+
+            <div
+                class="cms-card"
+                style="margin:24px 0;"
+            >
+
+                <h2>What you'll get</h2>
+
+                <p>
+                    🔢 A unique card code
+                </p>
+
+                <p>
+                    📱 A QR code
+                </p>
+
+                <p>
+                    ✏️ Your own card data
+                </p>
+
+                <p>
+                    🖨️ A printable card
+                </p>
+
+            </div>
+
+
+            <button
+                id="createButton"
+                style="margin-top:10px;"
+            >
+                ➕ Create Card
+            </button>
+
+
+            <p
+                id="status"
+                class="status"
+            >
+                Ready.
+            </p>
+
+
+            <a
+                id="backButton"
+                class="button secondary"
+                href="dashboard.html"
+                style="margin-top:12px;"
+            >
+                ← Back to Dashboard
+            </a>
+
+        </section>
+
+    </main>
+
 
     <script src="config.js"></script>
     <script src="supabase.js"></script>
+    <script src="card-data.js"></script>
+
 
     <script>
-        const createButton = document.getElementById("createButton");
-        const status = document.getElementById("status");
+
+        const createButton =
+            document.getElementById(
+                "createButton"
+            );
+
+        const status =
+            document.getElementById(
+                "status"
+            );
+
 
         function generateCardCode() {
+
             const characters =
                 "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
+
             const randomValues =
-                crypto.getRandomValues(new Uint32Array(12));
+                crypto.getRandomValues(
+                    new Uint32Array(12)
+                );
+
 
             let code = "";
 
-            for (let i = 0; i < randomValues.length; i++) {
-                code += characters[
-                    randomValues[i] % characters.length
-                ];
+
+            for (
+                let i = 0;
+                i < randomValues.length;
+                i++
+            ) {
+
+                code +=
+                    characters[
+                        randomValues[i] %
+                        characters.length
+                    ];
+
             }
+
 
             return (
-                code.substring(0, 4) + "-" +
-                code.substring(4, 8) + "-" +
+                code.substring(0, 4) +
+                "-" +
+                code.substring(4, 8) +
+                "-" +
                 code.substring(8, 12)
             );
+
         }
 
-        createButton.addEventListener("click", async () => {
-            createButton.disabled = true;
-            status.textContent = "Creating card...";
 
-            const {
-                data: { user },
-                error: userError
-            } = await supabaseClient.auth.getUser();
+        createButton.addEventListener(
+            "click",
+            async () => {
 
-            if (userError || !user) {
-                status.textContent = "You are not logged in.";
-                createButton.disabled = false;
-                return;
-            }
+                createButton.disabled =
+                    true;
 
-            const cardCode = generateCardCode();
-
-            const { data: card, error: cardError } =
-                await supabaseClient
-                    .from("cards")
-                    .insert({
-                        owner_id: user.id,
-                        card_code: cardCode
-                    })
-                    .select()
-                    .single();
-
-            if (cardError) {
                 status.textContent =
-                    "Could not create card: " + cardError.message;
+                    "Creating card...";
 
-                createButton.disabled = false;
-                return;
+                status.className =
+                    "status";
+
+
+                const {
+                    data: { user },
+                    error: userError
+                } =
+                    await supabaseClient
+                        .auth
+                        .getUser();
+
+
+                if (
+                    userError ||
+                    !user
+                ) {
+
+                    status.textContent =
+                        "You are not logged in.";
+
+                    status.className =
+                        "status error";
+
+                    createButton.disabled =
+                        false;
+
+                    return;
+
+                }
+
+
+                const cardCode =
+                    generateCardCode();
+
+
+                const {
+                    data: card,
+                    error: cardError
+                } =
+                    await supabaseClient
+                        .from("cards")
+                        .insert({
+                            owner_id:
+                                user.id,
+
+                            card_code:
+                                cardCode
+                        })
+                        .select()
+                        .single();
+
+
+                if (cardError) {
+
+                    status.textContent =
+                        "Could not create card: " +
+                        cardError.message;
+
+                    status.className =
+                        "status error";
+
+                    createButton.disabled =
+                        false;
+
+                    return;
+
+                }
+
+
+                try {
+
+                    await initializeCardData(
+                        card.id
+                    );
+
+
+                    status.innerHTML = `
+
+                        <strong>
+                            ✅ Card created!
+                        </strong>
+
+                        <br><br>
+
+                        Your card code:
+
+                        <br>
+
+                        <span class="card-code">
+                            ${card.card_code}
+                        </span>
+
+                        <br><br>
+
+                        <a
+                            class="button"
+                            href="card.html?id=${card.id}"
+                        >
+                            Open Card
+                        </a>
+
+                    `;
+
+                    status.className =
+                        "status success";
+
+
+                } catch (error) {
+
+                    status.textContent =
+                        "Card was created, but its data could not be initialized: " +
+                        error.message;
+
+                    status.className =
+                        "status error";
+
+                }
+
+
+                createButton.disabled =
+                    false;
+
             }
+        );
 
-            status.innerHTML = `
-                Card created successfully!<br><br>
-                Your card code is:
-                <strong>${card.card_code}</strong>
-            `;
-
-            createButton.disabled = false;
-        });
-
-        document.getElementById("backButton")
-            .addEventListener("click", () => {
-                window.location.href = "dashboard.html";
-            });
     </script>
 
 </body>
+
 </html>
