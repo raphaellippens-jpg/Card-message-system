@@ -21,7 +21,6 @@ The website is hosted with GitHub Pages.
 
 Supabase provides:
 
-- Authentication
 - PostgreSQL database
 - Row Level Security
 - Card storage
