@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Scan Card — Card Message System</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+
+<body>
+
+    <h1>Scan Card</h1>
+
+    <div id="reader"></div>
+
+    <p id="status">Point your camera at a card QR code.</p>
+
+    <script src="config.js"></script>
+    <script src="supabase.js"></script>
+
+    <script>
+        const status = document.getElementById("status");
+
+        let scanner;
+
+        async function handleScan(decodedText) {
+            if (!decodedText) {
+                return;
+            }
+
+            status.textContent = "Card detected.";
+
+            try {
+                if (scanner) {
+                    await scanner.stop();
+                }
+            } catch (error) {
+                console.log("Scanner stop:", error);
+            }
+
+            let cardCode = decodedText.trim();
+
+            // Supports either:
+            // CARD-1234-5678-ABCD
+            // or a future URL containing ?card=...
+            try {
+                const url = new URL(cardCode);
+
+                const urlCardCode =
+                    url.searchParams.get("card");
+
+                if (urlCardCode) {
+                    cardCode = urlCardCode;
+                }
+            } catch {
+                // The QR code wasn't a URL.
+                // Treat the entire value as the card code.
+            }
+
+            window.location.href =
+                "card-view.html?code=" +
+                encodeURIComponent(cardCode);
+        }
+
+        scanner = new Html5Qrcode("reader");
+
+        scanner.start(
+            { facingMode: "environment" },
+            {
+                fps: 10,
+                qrbox: {
+                    width: 250,
+                    height: 250
+                }
+            },
+            handleScan,
+            () => {
+                // Ignore individual failed scans.
+            }
+        ).catch(error => {
+            status.textContent =
+                "Camera could not be started: " + error;
+        });
+    </script>
+
+</body>
+</html>
