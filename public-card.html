@@ -1,124 +1,336 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Public Card — Card Message System</title>
+
+    <link rel="stylesheet" href="style.css">
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
 
-    <h1>Card Information</h1>
+    <nav>
+        <strong>🪪 Card Message System</strong>
 
-    <p id="status">Loading...</p>
+        <div class="nav-links">
+            <a
+                class="button secondary"
+                href="index.html"
+            >
+                Home
+            </a>
+        </div>
+    </nav>
 
-    <div id="card" hidden>
-        <h2 id="cardCode"></h2>
 
-        <pre id="cardData"></pre>
+    <main>
 
-        <button id="exportButton">
-            Export Data
-        </button>
-    </div>
+        <section
+            class="panel"
+            style="max-width:700px;margin:40px auto;"
+        >
 
-    <button id="scanButton">
-        Scan Another Card
-    </button>
+            <h1>Card Information</h1>
+
+            <p>
+                Card:
+                <span
+                    id="cardCode"
+                    class="card-code"
+                >
+                    Loading...
+                </span>
+            </p>
+
+
+            <div
+                id="cardData"
+                class="cms-card"
+                style="margin-top:24px;"
+            >
+                Loading card data...
+            </div>
+
+
+            <div
+                class="row"
+                style="margin-top:24px;"
+            >
+
+                <button id="exportButton">
+                    📤 Export Data
+                </button>
+
+                <a
+                    class="button secondary"
+                    href="scan.html"
+                >
+                    📷 Scan Another Card
+                </a>
+
+            </div>
+
+
+            <p
+                id="status"
+                class="status"
+            >
+                Loading...
+            </p>
+
+        </section>
+
+    </main>
+
 
     <script src="config.js"></script>
     <script src="supabase.js"></script>
 
+
     <script>
-        const params = new URLSearchParams(window.location.search);
-        const code = params.get("code");
 
-        const status = document.getElementById("status");
-        const card = document.getElementById("card");
-        const cardCode = document.getElementById("cardCode");
-        const cardData = document.getElementById("cardData");
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
 
-        let exportedData = null;
+        const code =
+            params.get("code");
 
-        async function loadPublicCard() {
+
+        const cardCode =
+            document.getElementById(
+                "cardCode"
+            );
+
+        const cardData =
+            document.getElementById(
+                "cardData"
+            );
+
+        const status =
+            document.getElementById(
+                "status"
+            );
+
+        const exportButton =
+            document.getElementById(
+                "exportButton"
+            );
+
+
+        let publicData = null;
+
+
+
+        async function loadCard() {
+
             if (!code) {
-                status.textContent = "No card code provided.";
+
+                cardCode.textContent =
+                    "Unknown";
+
+                cardData.textContent =
+                    "No card code was provided.";
+
+                status.textContent =
+                    "Card code missing.";
+
+                status.className =
+                    "status error";
+
                 return;
             }
 
-            const { data, error } =
+
+            cardCode.textContent =
+                code;
+
+
+            const {
+                data,
+                error
+            } =
                 await supabaseClient.rpc(
                     "get_public_card_data",
                     {
-                        requested_card_code: code
+                        requested_card_code:
+                            code
                     }
                 );
 
+
             if (error) {
+
+                cardData.textContent =
+                    "Could not load card.";
+
                 status.textContent =
-                    "Could not load card: " + error.message;
+                    error.message;
+
+                status.className =
+                    "status error";
+
                 return;
             }
+
 
             if (!data) {
-                status.textContent = "Card not found.";
+
+                cardData.textContent =
+                    "Card not found.";
+
+                status.textContent =
+                    "This card does not exist.";
+
+                status.className =
+                    "status error";
+
                 return;
             }
 
-            exportedData = data;
 
-            cardCode.textContent =
-                "Card: " + data.card_code;
+            publicData = data;
 
-            cardData.textContent =
-                JSON.stringify(data.data || {}, null, 2);
 
-            card.hidden = false;
-            status.textContent = "";
+            const actualData =
+                data.data || {};
+
+
+            cardData.innerHTML = "";
+
+
+            if (
+                typeof actualData.text ===
+                "string" &&
+                actualData.text.trim() !== ""
+            ) {
+
+                const title =
+                    document.createElement(
+                        "h2"
+                    );
+
+                title.textContent =
+                    "💬 Message";
+
+                cardData.appendChild(
+                    title
+                );
+
+
+                const text =
+                    document.createElement(
+                        "p"
+                    );
+
+                text.textContent =
+                    actualData.text;
+
+                text.style.whiteSpace =
+                    "pre-wrap";
+
+                text.style.fontSize =
+                    "1.15rem";
+
+                cardData.appendChild(
+                    text
+                );
+
+            } else {
+
+                const empty =
+                    document.createElement(
+                        "p"
+                    );
+
+                empty.textContent =
+                    "This card doesn't have any public data yet.";
+
+                cardData.appendChild(
+                    empty
+                );
+
+            }
+
+
+            status.textContent =
+                "Card loaded.";
+
+            status.className =
+                "status success";
+
         }
 
-        document.getElementById("exportButton")
-            .addEventListener("click", () => {
-                if (!exportedData) {
+
+
+        exportButton.addEventListener(
+            "click",
+            () => {
+
+                if (!publicData) {
                     return;
                 }
 
-                const file = new Blob(
-                    [
-                        JSON.stringify(
-                            exportedData,
-                            null,
-                            2
-                        )
-                    ],
-                    {
-                        type: "application/json"
-                    }
-                );
 
-                const url = URL.createObjectURL(file);
+                const file =
+                    new Blob(
+                        [
+                            JSON.stringify(
+                                publicData,
+                                null,
+                                2
+                            )
+                        ],
+                        {
+                            type:
+                                "application/json"
+                        }
+                    );
 
-                const link = document.createElement("a");
+
+                const url =
+                    URL.createObjectURL(
+                        file
+                    );
+
+
+                const link =
+                    document.createElement(
+                        "a"
+                    );
+
 
                 link.href = url;
+
                 link.download =
-                    exportedData.card_code + ".json";
+                    `card-${code}.json`;
+
 
                 link.click();
 
-                URL.revokeObjectURL(url);
-            });
 
-        document.getElementById("scanButton")
-            .addEventListener("click", () => {
-                window.location.href = "scan.html";
-            });
+                URL.revokeObjectURL(
+                    url
+                );
 
-        loadPublicCard();
+            }
+        );
+
+
+        loadCard();
+
     </script>
 
 </body>
+
 </html>
