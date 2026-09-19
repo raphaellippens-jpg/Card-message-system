@@ -1,170 +1,604 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Card Message System — Card</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Card Editor — Card Message System</title>
+
+    <link rel="stylesheet" href="style.css">
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 </head>
 
 <body>
 
-    <h1>Card Editor</h1>
+    <nav>
 
-    <p id="cardCode"></p>
+        <strong>🪪 Card Message System</strong>
 
-    <label for="cardText">Card data:</label>
-    <br>
+        <div class="nav-links">
 
-    <textarea
-        id="cardText"
-        rows="10"
-        cols="40"
-        placeholder="Enter something to store on this card..."
-    ></textarea>
+            <a
+                class="button secondary"
+                href="dashboard.html"
+            >
+                Dashboard
+            </a>
 
-    <br><br>
+        </div>
 
-    <button id="saveButton">
-        Save
-    </button>
+    </nav>
 
-    <button id="deleteButton">
-        Delete Data
-    </button>
 
-    <button id="backButton">
-        Back to Dashboard
-    </button>
+    <main>
 
-    <p id="status"></p>
+        <section class="panel">
+
+            <h1>🪪 Card Editor</h1>
+
+            <p>
+                Manage your card and its connected data.
+            </p>
+
+            <div
+                class="cms-card"
+                style="margin-top:24px;"
+            >
+
+                <h3>Card Code</h3>
+
+                <span
+                    id="cardCode"
+                    class="card-code"
+                >
+                    Loading...
+                </span>
+
+            </div>
+
+
+            <!-- QR CODE -->
+
+            <div
+                class="cms-card center"
+                style="margin-top:18px;"
+            >
+
+                <h3>📱 QR Code</h3>
+
+                <p>
+                    Scan this QR code to open this card.
+                </p>
+
+                <div
+                    id="qrcode"
+                    style="
+                        width:220px;
+                        min-height:220px;
+                        margin:20px auto;
+                        padding:10px;
+                        background:white;
+                        border-radius:12px;
+                    "
+                ></div>
+
+            </div>
+
+
+            <!-- CARD DATA -->
+
+            <div
+                class="cms-card"
+                style="margin-top:18px;"
+            >
+
+                <h2>Card Data</h2>
+
+                <label for="cardText">
+                    Message
+                </label>
+
+                <textarea
+                    id="cardText"
+                    placeholder="Enter something to store on this card..."
+                ></textarea>
+
+
+                <div
+                    class="row"
+                    style="margin-top:16px;"
+                >
+
+                    <button id="saveButton">
+                        💾 Save
+                    </button>
+
+                    <button
+                        id="deleteDataButton"
+                        class="danger"
+                    >
+                        🗑️ Delete Data
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- CARD ACTIONS -->
+
+            <div
+                class="cms-card"
+                style="margin-top:18px;"
+            >
+
+                <h2>Card Actions</h2>
+
+                <div class="row">
+
+                    <a
+                        id="printButton"
+                        class="button secondary"
+                        href="#"
+                    >
+                        🖨️ Print Card
+                    </a>
+
+                    <button
+                        id="deleteCardButton"
+                        class="danger"
+                    >
+                        🗑️ Delete Card
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <p
+                id="status"
+                class="status"
+                style="margin-top:18px;"
+            >
+                Loading card...
+            </p>
+
+        </section>
+
+    </main>
+
 
     <script src="config.js"></script>
     <script src="supabase.js"></script>
     <script src="card-data.js"></script>
 
-    <script>
-        const params = new URLSearchParams(window.location.search);
-        const cardId = params.get("id");
 
-        const cardCodeElement = document.getElementById("cardCode");
-        const cardText = document.getElementById("cardText");
-        const status = document.getElementById("status");
+    <script>
+
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
+
+        const cardId =
+            params.get("id");
+
+
+        const cardCodeElement =
+            document.getElementById(
+                "cardCode"
+            );
+
+        const cardText =
+            document.getElementById(
+                "cardText"
+            );
+
+        const status =
+            document.getElementById(
+                "status"
+            );
+
+        const saveButton =
+            document.getElementById(
+                "saveButton"
+            );
+
+        const deleteDataButton =
+            document.getElementById(
+                "deleteDataButton"
+            );
+
+        const deleteCardButton =
+            document.getElementById(
+                "deleteCardButton"
+            );
+
+        const printButton =
+            document.getElementById(
+                "printButton"
+            );
 
         let currentDataId = null;
 
+
+
         async function loadCard() {
+
             if (!cardId) {
-                status.textContent = "No card specified.";
+
+                status.textContent =
+                    "No card specified.";
+
+                status.className =
+                    "status error";
+
                 return;
+
             }
+
 
             const {
                 data: { user }
-            } = await supabaseClient.auth.getUser();
+            } =
+                await supabaseClient
+                    .auth
+                    .getUser();
+
 
             if (!user) {
-                window.location.href = "auth.html";
+
+                window.location.href =
+                    "auth.html";
+
                 return;
+
             }
 
-            const { data: card, error: cardError } =
+
+            const {
+                data: card,
+                error: cardError
+            } =
                 await supabaseClient
                     .from("cards")
-                    .select("id, card_code, owner_id")
-                    .eq("id", cardId)
+                    .select(
+                        "id, card_code, owner_id"
+                    )
+                    .eq(
+                        "id",
+                        cardId
+                    )
                     .single();
 
-            if (cardError || !card) {
-                status.textContent = "Card not found.";
+
+            if (
+                cardError ||
+                !card
+            ) {
+
+                status.textContent =
+                    "Card not found.";
+
+                status.className =
+                    "status error";
+
                 return;
+
             }
 
-            if (card.owner_id !== user.id) {
+
+            if (
+                card.owner_id !== user.id
+            ) {
+
                 status.textContent =
                     "You do not own this card.";
+
+                status.className =
+                    "status error";
+
                 return;
+
             }
+
 
             cardCodeElement.textContent =
-                "Card code: " + card.card_code;
+                card.card_code;
+
+
+            printButton.href =
+                "card-print.html?id=" +
+                encodeURIComponent(
+                    card.id
+                );
+
+
+            /*
+             * QR points directly to the
+             * public scan-result page.
+             */
+
+            const qrUrl =
+                window.location.origin +
+                window.location.pathname
+                    .replace(
+                        "card.html",
+                        "scan-result.html"
+                    ) +
+                "?code=" +
+                encodeURIComponent(
+                    card.card_code
+                );
+
+
+            new QRCode(
+                document.getElementById(
+                    "qrcode"
+                ),
+                {
+                    text: qrUrl,
+                    width: 200,
+                    height: 200,
+                    correctLevel:
+                        QRCode.CorrectLevel.M
+                }
+            );
+
 
             try {
-                const data = await initializeCardData(cardId);
 
-                currentDataId = data.id;
+                const data =
+                    await initializeCardData(
+                        cardId
+                    );
 
-                if (data.data && typeof data.data.text === "string") {
-                    cardText.value = data.data.text;
+
+                currentDataId =
+                    data.id;
+
+
+                if (
+                    data.data &&
+                    typeof data.data.text ===
+                    "string"
+                ) {
+
+                    cardText.value =
+                        data.data.text;
+
                 }
 
-                status.textContent = "Card loaded.";
-            } catch (error) {
+
                 status.textContent =
-                    "Could not load card data: " + error.message;
+                    "Card loaded.";
+
+                status.className =
+                    "status success";
+
+
+            } catch (error) {
+
+                status.textContent =
+                    "Could not load card data: " +
+                    error.message;
+
+                status.className =
+                    "status error";
+
             }
+
         }
 
-        document.getElementById("saveButton")
-            .addEventListener("click", async () => {
+
+
+        saveButton.addEventListener(
+            "click",
+            async () => {
 
                 if (!currentDataId) {
                     return;
                 }
 
-                const { error } = await supabaseClient
-                    .from("card_data")
-                    .update({
-                        data: {
-                            text: cardText.value
-                        },
-                        updated_at: new Date().toISOString()
-                    })
-                    .eq("id", currentDataId);
+
+                saveButton.disabled =
+                    true;
+
+
+                const {
+                    error
+                } =
+                    await supabaseClient
+                        .from("card_data")
+                        .update({
+                            data: {
+                                text:
+                                    cardText.value
+                            },
+
+                            updated_at:
+                                new Date()
+                                    .toISOString()
+                        })
+                        .eq(
+                            "id",
+                            currentDataId
+                        );
+
 
                 if (error) {
+
                     status.textContent =
-                        "Could not save: " + error.message;
-                    return;
+                        "Could not save: " +
+                        error.message;
+
+                    status.className =
+                        "status error";
+
+                } else {
+
+                    status.textContent =
+                        "Saved successfully.";
+
+                    status.className =
+                        "status success";
+
                 }
 
-                status.textContent = "Saved.";
-            });
 
-        document.getElementById("deleteButton")
-            .addEventListener("click", async () => {
+                saveButton.disabled =
+                    false;
+
+            }
+        );
+
+
+
+        deleteDataButton.addEventListener(
+            "click",
+            async () => {
 
                 if (!currentDataId) {
                     return;
                 }
 
-                const { error } = await supabaseClient
-                    .from("card_data")
-                    .update({
-                        data: {},
-                        updated_at: new Date().toISOString()
-                    })
-                    .eq("id", currentDataId);
+
+                if (
+                    !confirm(
+                        "Delete all data from this card?"
+                    )
+                ) {
+
+                    return;
+
+                }
+
+
+                deleteDataButton.disabled =
+                    true;
+
+
+                const {
+                    error
+                } =
+                    await supabaseClient
+                        .from("card_data")
+                        .update({
+                            data: {},
+
+                            updated_at:
+                                new Date()
+                                    .toISOString()
+                        })
+                        .eq(
+                            "id",
+                            currentDataId
+                        );
+
 
                 if (error) {
+
                     status.textContent =
-                        "Could not remove data: " + error.message;
+                        "Could not delete data: " +
+                        error.message;
+
+                    status.className =
+                        "status error";
+
+                } else {
+
+                    cardText.value = "";
+
+                    status.textContent =
+                        "Card data deleted.";
+
+                    status.className =
+                        "status success";
+
+                }
+
+
+                deleteDataButton.disabled =
+                    false;
+
+            }
+        );
+
+
+
+        deleteCardButton.addEventListener(
+            "click",
+            async () => {
+
+                if (!cardId) {
                     return;
                 }
 
-                cardText.value = "";
-                status.textContent = "Card data removed.";
-            });
 
-        document.getElementById("backButton")
-            .addEventListener("click", () => {
-                window.location.href = "dashboard.html";
-            });
+                if (
+                    !confirm(
+                        "Delete this entire card? This cannot be undone."
+                    )
+                ) {
+
+                    return;
+
+                }
+
+
+                deleteCardButton.disabled =
+                    true;
+
+
+                const {
+                    error
+                } =
+                    await supabaseClient
+                        .from("cards")
+                        .delete()
+                        .eq(
+                            "id",
+                            cardId
+                        );
+
+
+                if (error) {
+
+                    status.textContent =
+                        "Could not delete card: " +
+                        error.message;
+
+                    status.className =
+                        "status error";
+
+                    deleteCardButton.disabled =
+                        false;
+
+                    return;
+
+                }
+
+
+                window.location.href =
+                    "dashboard.html";
+
+            }
+        );
+
+
 
         loadCard();
+
     </script>
 
 </body>
+
 </html>
