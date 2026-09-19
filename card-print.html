@@ -1,216 +1,967 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Print Card — Card Message System</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Card Designer — Card Message System</title>
+
+    <link rel="stylesheet" href="style.css">
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 20px;
+
+        .designer {
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 24px;
+            align-items: start;
         }
 
-        #card {
-            width: 350px;
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .control-group label {
+            margin: 0;
+        }
+
+        input[type="color"] {
+            height: 48px;
+            padding: 4px;
+            cursor: pointer;
+        }
+
+        input[type="range"] {
+            width: 100%;
+        }
+
+        .preview-area {
+            position: sticky;
+            top: 90px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 500px;
+            padding: 20px;
+            background:
+                repeating-conic-gradient(
+                    #222 0% 25%,
+                    #181818 0% 50%
+                ) 50% / 20px 20px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .physical-card {
+            width: 600px;
+            height: 380px;
+            max-width: 100%;
+            aspect-ratio: 600 / 380;
+
+            position: relative;
+
+            padding: 34px;
+
+            border-radius: 28px;
+
+            background: #151922;
+            color: white;
+
+            box-shadow:
+                0 25px 60px rgba(0, 0, 0, 0.45);
+
+            overflow: hidden;
+
+            display: flex;
+            flex-direction: column;
+        }
+
+        .physical-card::after {
+            content: "";
+
+            position: absolute;
+
+            width: 220px;
             height: 220px;
-            margin: 30px auto;
-            border: 2px solid black;
-            border-radius: 18px;
-            padding: 20px;
-            box-sizing: border-box;
-            background: white;
-            color: black;
+
+            right: -80px;
+            bottom: -80px;
+
+            border-radius: 50%;
+
+            background: var(--card-accent);
+
+            opacity: 0.16;
         }
 
-        #card h2 {
-            margin-top: 10px;
-            margin-bottom: 8px;
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+
+            position: relative;
+            z-index: 2;
         }
 
-        #cardCode {
+        .card-title {
+            margin: 0;
+
+            font-size: 32px;
+            font-weight: 800;
+
+            word-break: break-word;
+        }
+
+        .card-name {
+            margin-top: 5px;
+
+            opacity: 0.7;
             font-size: 14px;
-            letter-spacing: 2px;
         }
 
-        #qrcode {
-            margin: 15px auto 0;
+        .card-message {
+            position: relative;
+            z-index: 2;
+
+            flex: 1;
+
+            display: flex;
+            align-items: center;
+
+            font-size: 24px;
+            line-height: 1.35;
+
+            white-space: pre-wrap;
+            word-break: break-word;
+
+            padding-right: 130px;
+        }
+
+        .card-qr {
+            position: absolute;
+
+            right: 28px;
+            bottom: 54px;
+
             width: 100px;
             height: 100px;
+
+            padding: 7px;
+
+            background: white;
+            border-radius: 12px;
+
+            z-index: 5;
+        }
+
+        .card-qr img {
+            width: 100%;
+            height: 100%;
+        }
+
+        .card-code-display {
+            position: absolute;
+
+            left: 34px;
+            bottom: 22px;
+
+            font-family:
+                ui-monospace,
+                SFMono-Regular,
+                Menlo,
+                Monaco,
+                Consolas,
+                monospace;
+
+            font-size: 12px;
+
+            letter-spacing: 2px;
+
+            opacity: 0.7;
+
+            z-index: 5;
+        }
+
+        .switch-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .switch-row label {
+            margin: 0;
+        }
+
+        .checkbox {
+            width: 20px;
+            height: 20px;
+        }
+
+        .preview-size {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        @media (max-width: 850px) {
+
+            .designer {
+                grid-template-columns: 1fr;
+            }
+
+            .preview-area {
+                position: static;
+                min-height: 400px;
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            .physical-card {
+                padding: 22px;
+                border-radius: 20px;
+            }
+
+            .card-title {
+                font-size: 22px;
+            }
+
+            .card-message {
+                font-size: 16px;
+                padding-right: 90px;
+            }
+
+            .card-qr {
+                width: 75px;
+                height: 75px;
+
+                right: 18px;
+                bottom: 42px;
+            }
+
+            .card-code-display {
+                left: 22px;
+                bottom: 15px;
+
+                font-size: 9px;
+            }
+
         }
 
         @media print {
+
             body {
-                padding: 0;
+                background: white !important;
             }
 
-            body > *:not(#card) {
-                display: none;
+            body > * {
+                display: none !important;
             }
 
-            #card {
+            #printCard {
+                display: flex !important;
+
+                position: absolute;
+
+                left: 0;
+                top: 0;
+
+                width: 600px;
+                height: 380px;
+
                 margin: 0;
+
+                box-shadow: none;
             }
+
         }
+
     </style>
+
 </head>
+
 
 <body>
 
-    <h1>Printable Card</h1>
+    <nav>
 
-    <p id="status">Loading...</p>
+        <strong>
+            🪪 Card Message System
+        </strong>
 
-    <div id="card" hidden>
+        <div class="nav-links">
 
-        <h2 id="accountName">Card Message System</h2>
+            <a
+                class="button secondary"
+                href="dashboard.html"
+            >
+                Dashboard
+            </a>
 
-        <div id="cardCode"></div>
+            <a
+                class="button secondary"
+                id="backToCard"
+                href="#"
+            >
+                ← Card
+            </a>
 
-        <div id="qrcode"></div>
+        </div>
 
-    </div>
+    </nav>
 
-    <button id="printButton" hidden>
-        Print Card
-    </button>
 
-    <button id="dashboardButton">
-        Dashboard
-    </button>
+    <main>
+
+        <section class="panel">
+
+            <h1>🎨 Card Designer</h1>
+
+            <p>
+                Customize your physical card and
+                see the result live.
+            </p>
+
+
+            <div class="designer">
+
+
+                <!-- CONTROLS -->
+
+                <div class="panel">
+
+                    <h2>Customize</h2>
+
+
+                    <div class="controls">
+
+
+                        <div class="control-group">
+
+                            <label for="titleInput">
+                                Card title
+                            </label>
+
+                            <input
+                                id="titleInput"
+                                type="text"
+                                value="Card Message"
+                                maxlength="40"
+                            >
+
+                        </div>
+
+
+                        <div class="control-group">
+
+                            <label for="nameInput">
+                                Name
+                            </label>
+
+                            <input
+                                id="nameInput"
+                                type="text"
+                                placeholder="Your name"
+                                maxlength="40"
+                            >
+
+                        </div>
+
+
+                        <div class="control-group">
+
+                            <label for="messageInput">
+                                Message
+                            </label>
+
+                            <textarea
+                                id="messageInput"
+                                placeholder="Your message..."
+                                style="min-height:100px;"
+                                maxlength="500"
+                            ></textarea>
+
+                        </div>
+
+
+                        <div class="control-group">
+
+                            <label for="backgroundInput">
+                                Background
+                            </label>
+
+                            <input
+                                id="backgroundInput"
+                                type="color"
+                                value="#151922"
+                            >
+
+                        </div>
+
+
+                        <div class="control-group">
+
+                            <label for="accentInput">
+                                Accent
+                            </label>
+
+                            <input
+                                id="accentInput"
+                                type="color"
+                                value="#6c8cff"
+                            >
+
+                        </div>
+
+
+                        <div class="control-group">
+
+                            <label for="textSize">
+                                Text size
+                            </label>
+
+                            <input
+                                id="textSize"
+                                type="range"
+                                min="14"
+                                max="40"
+                                value="24"
+                            >
+
+                            <span
+                                id="textSizeValue"
+                                class="preview-size"
+                            >
+                                24px
+                            </span>
+
+                        </div>
+
+
+                        <div class="switch-row">
+
+                            <label for="showQR">
+                                📱 Show QR code
+                            </label>
+
+                            <input
+                                id="showQR"
+                                class="checkbox"
+                                type="checkbox"
+                                checked
+                            >
+
+                        </div>
+
+
+                        <div class="switch-row">
+
+                            <label for="showCode">
+                                🔢 Show card code
+                            </label>
+
+                            <input
+                                id="showCode"
+                                class="checkbox"
+                                type="checkbox"
+                                checked
+                            >
+
+                        </div>
+
+
+                        <button
+                            id="printButton"
+                            style="margin-top:10px;"
+                        >
+                            🖨️ Print Card
+                        </button>
+
+
+                    </div>
+
+                </div>
+
+
+                <!-- PREVIEW -->
+
+                <div>
+
+                    <div class="preview-area">
+
+                        <div
+                            id="printCard"
+                            class="physical-card"
+                        >
+
+                            <div class="card-top">
+
+                                <div>
+
+                                    <h2
+                                        id="previewTitle"
+                                        class="card-title"
+                                    >
+                                        Card Message
+                                    </h2>
+
+                                    <div
+                                        id="previewName"
+                                        class="card-name"
+                                    >
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <div
+                                id="previewMessage"
+                                class="card-message"
+                            >
+                                Your message...
+                            </div>
+
+
+                            <div
+                                id="qrContainer"
+                                class="card-qr"
+                            ></div>
+
+
+                            <div
+                                id="previewCode"
+                                class="card-code-display"
+                            >
+                                Loading...
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <p
+                        class="preview-size"
+                        style="text-align:center;margin-top:10px;"
+                    >
+                        Live print preview
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+            <p
+                id="status"
+                class="status"
+            >
+                Loading card...
+            </p>
+
+        </section>
+
+    </main>
+
 
     <script src="config.js"></script>
     <script src="supabase.js"></script>
 
-    <script>
-        const params =
-            new URLSearchParams(window.location.search);
 
-        const cardId = params.get("id");
+    <script>
+
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
+
+        const cardId =
+            params.get("id");
+
 
         const status =
-            document.getElementById("status");
+            document.getElementById(
+                "status"
+            );
 
-        const card =
-            document.getElementById("card");
 
-        const accountName =
-            document.getElementById("accountName");
+        const printCard =
+            document.getElementById(
+                "printCard"
+            );
 
-        const cardCode =
-            document.getElementById("cardCode");
 
-        const qrCode =
-            document.getElementById("qrcode");
+        const titleInput =
+            document.getElementById(
+                "titleInput"
+            );
 
-        const printButton =
-            document.getElementById("printButton");
 
-        async function loadCard() {
-            if (!cardId) {
-                status.textContent =
-                    "No card was specified.";
+        const nameInput =
+            document.getElementById(
+                "nameInput"
+            );
 
+
+        const messageInput =
+            document.getElementById(
+                "messageInput"
+            );
+
+
+        const backgroundInput =
+            document.getElementById(
+                "backgroundInput"
+            );
+
+
+        const accentInput =
+            document.getElementById(
+                "accentInput"
+            );
+
+
+        const textSize =
+            document.getElementById(
+                "textSize"
+            );
+
+
+        const textSizeValue =
+            document.getElementById(
+                "textSizeValue"
+            );
+
+
+        const showQR =
+            document.getElementById(
+                "showQR"
+            );
+
+
+        const showCode =
+            document.getElementById(
+                "showCode"
+            );
+
+
+        const previewTitle =
+            document.getElementById(
+                "previewTitle"
+            );
+
+
+        const previewName =
+            document.getElementById(
+                "previewName"
+            );
+
+
+        const previewMessage =
+            document.getElementById(
+                "previewMessage"
+            );
+
+
+        const qrContainer =
+            document.getElementById(
+                "qrContainer"
+            );
+
+
+        const previewCode =
+            document.getElementById(
+                "previewCode"
+            );
+
+
+        let cardCode = "";
+
+
+
+        function updatePreview() {
+
+            previewTitle.textContent =
+                titleInput.value ||
+                "Card Message";
+
+
+            previewName.textContent =
+                nameInput.value;
+
+
+            previewMessage.textContent =
+                messageInput.value ||
+                "Your message...";
+
+
+            printCard.style.background =
+                backgroundInput.value;
+
+
+            printCard.style.setProperty(
+                "--card-accent",
+                accentInput.value
+            );
+
+
+            previewMessage.style.fontSize =
+                textSize.value + "px";
+
+
+            textSizeValue.textContent =
+                textSize.value + "px";
+
+
+            qrContainer.style.display =
+                showQR.checked
+                    ? "block"
+                    : "none";
+
+
+            previewCode.style.display =
+                showCode.checked
+                    ? "block"
+                    : "none";
+
+        }
+
+
+
+        function createQR() {
+
+            qrContainer.innerHTML = "";
+
+
+            if (!cardCode) {
                 return;
             }
 
-            const {
-                data: { user },
-                error: userError
-            } = await supabaseClient.auth.getUser();
 
-            if (userError || !user) {
+            const qrUrl =
+                window.location.origin +
+                "/Card-message-system/" +
+                "scan-result.html?code=" +
+                encodeURIComponent(
+                    cardCode
+                );
+
+
+            new QRCode(
+                qrContainer,
+                {
+                    text: qrUrl,
+                    width: 100,
+                    height: 100,
+                    correctLevel:
+                        QRCode.CorrectLevel.M
+                }
+            );
+
+        }
+
+
+
+        async function loadCard() {
+
+            if (!cardId) {
+
+                status.textContent =
+                    "No card specified.";
+
+                status.className =
+                    "status error";
+
+                return;
+
+            }
+
+
+            const {
+                data: { user }
+            } =
+                await supabaseClient
+                    .auth
+                    .getUser();
+
+
+            if (!user) {
+
                 window.location.href =
                     "auth.html";
 
                 return;
+
             }
 
-            const { data: cardData, error } =
+
+            const {
+                data: card,
+                error
+            } =
                 await supabaseClient
                     .from("cards")
                     .select(
                         "id, card_code, owner_id"
                     )
-                    .eq("id", cardId)
-                    .maybeSingle();
+                    .eq(
+                        "id",
+                        cardId
+                    )
+                    .single();
 
-            if (error || !cardData) {
+
+            if (
+                error ||
+                !card
+            ) {
+
                 status.textContent =
                     "Card not found.";
 
+                status.className =
+                    "status error";
+
                 return;
+
             }
 
-            if (cardData.owner_id !== user.id) {
+
+            if (
+                card.owner_id !== user.id
+            ) {
+
                 status.textContent =
                     "You do not own this card.";
 
+                status.className =
+                    "status error";
+
                 return;
+
             }
 
-            /*
-             * The physical card contains only the
-             * card identifier.
-             *
-             * The actual data stays in Supabase.
-             */
 
-            const scanURL =
-                window.location.origin +
-                window.location.pathname
-                    .replace(
-                        "card-print.html",
-                        "scan-result.html"
-                    ) +
-                "?code=" +
-                encodeURIComponent(
-                    cardData.card_code
-                );
+            cardCode =
+                card.card_code;
 
-            accountName.textContent =
+
+            previewCode.textContent =
+                cardCode;
+
+
+            nameInput.value =
                 user.email;
 
-            cardCode.textContent =
-                cardData.card_code;
 
-            new QRCode(qrCode, {
-                text: scanURL,
-                width: 100,
-                height: 100
-            });
+            document.getElementById(
+                "backToCard"
+            ).href =
+                "card.html?id=" +
+                encodeURIComponent(
+                    cardId
+                );
 
-            card.hidden = false;
-            printButton.hidden = false;
+
+            createQR();
+
+            updatePreview();
+
+
             status.textContent =
-                "Your card is ready to print.";
+                "Ready to customize.";
+
+            status.className =
+                "status success";
+
         }
 
-        printButton.addEventListener(
-            "click",
-            () => {
-                window.print();
-            }
+
+
+        titleInput.addEventListener(
+            "input",
+            updatePreview
         );
 
+
+        nameInput.addEventListener(
+            "input",
+            updatePreview
+        );
+
+
+        messageInput.addEventListener(
+            "input",
+            updatePreview
+        );
+
+
+        backgroundInput.addEventListener(
+            "input",
+            updatePreview
+        );
+
+
+        accentInput.addEventListener(
+            "input",
+            updatePreview
+        );
+
+
+        textSize.addEventListener(
+            "input",
+            updatePreview
+        );
+
+
+        showQR.addEventListener(
+            "change",
+            updatePreview
+        );
+
+
+        showCode.addEventListener(
+            "change",
+            updatePreview
+        );
+
+
         document
-            .getElementById("dashboardButton")
+            .getElementById("printButton")
             .addEventListener(
                 "click",
                 () => {
-                    window.location.href =
-                        "dashboard.html";
+
+                    window.print();
+
                 }
             );
 
+
         loadCard();
+
     </script>
 
 </body>
+
 </html>
