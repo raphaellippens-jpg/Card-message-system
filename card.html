@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Card Message System — Card</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+
+    <h1>Card Editor</h1>
+
+    <p id="cardCode"></p>
+
+    <label for="cardText">Card data:</label>
+    <br>
+
+    <textarea
+        id="cardText"
+        rows="10"
+        cols="40"
+        placeholder="Enter something to store on this card..."
+    ></textarea>
+
+    <br><br>
+
+    <button id="saveButton">
+        Save
+    </button>
+
+    <button id="deleteButton">
+        Delete Data
+    </button>
+
+    <button id="backButton">
+        Back to Dashboard
+    </button>
+
+    <p id="status"></p>
+
+    <script src="config.js"></script>
+    <script src="supabase.js"></script>
+    <script src="card-data.js"></script>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const cardId = params.get("id");
+
+        const cardCodeElement = document.getElementById("cardCode");
+        const cardText = document.getElementById("cardText");
+        const status = document.getElementById("status");
+
+        let currentDataId = null;
+
+        async function loadCard() {
+            if (!cardId) {
+                status.textContent = "No card specified.";
+                return;
+            }
+
+            const {
+                data: { user }
+            } = await supabaseClient.auth.getUser();
+
+            if (!user) {
+                window.location.href = "auth.html";
+                return;
+            }
+
+            const { data: card, error: cardError } =
+                await supabaseClient
+                    .from("cards")
+                    .select("id, card_code, owner_id")
+                    .eq("id", cardId)
+                    .single();
+
+            if (cardError || !card) {
+                status.textContent = "Card not found.";
+                return;
+            }
+
+            if (card.owner_id !== user.id) {
+                status.textContent =
+                    "You do not own this card.";
+                return;
+            }
+
+            cardCodeElement.textContent =
+                "Card code: " + card.card_code;
+
+            try {
+                const data = await initializeCardData(cardId);
+
+                currentDataId = data.id;
+
+                if (data.data && typeof data.data.text === "string") {
+                    cardText.value = data.data.text;
+                }
+
+                status.textContent = "Card loaded.";
+            } catch (error) {
+                status.textContent =
+                    "Could not load card data: " + error.message;
+            }
+        }
+
+        document.getElementById("saveButton")
+            .addEventListener("click", async () => {
+
+                if (!currentDataId) {
+                    return;
+                }
+
+                const { error } = await supabaseClient
+                    .from("card_data")
+                    .update({
+                        data: {
+                            text: cardText.value
+                        },
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq("id", currentDataId);
+
+                if (error) {
+                    status.textContent =
+                        "Could not save: " + error.message;
+                    return;
+                }
+
+                status.textContent = "Saved.";
+            });
+
+        document.getElementById("deleteButton")
+            .addEventListener("click", async () => {
+
+                if (!currentDataId) {
+                    return;
+                }
+
+                const { error } = await supabaseClient
+                    .from("card_data")
+                    .update({
+                        data: {},
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq("id", currentDataId);
+
+                if (error) {
+                    status.textContent =
+                        "Could not remove data: " + error.message;
+                    return;
+                }
+
+                cardText.value = "";
+                status.textContent = "Card data removed.";
+            });
+
+        document.getElementById("backButton")
+            .addEventListener("click", () => {
+                window.location.href = "dashboard.html";
+            });
+
+        loadCard();
+    </script>
+
+</body>
+</html>
