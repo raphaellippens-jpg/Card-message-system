@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Public Card — Card Message System</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+
+    <h1>Card Information</h1>
+
+    <p id="status">Loading...</p>
+
+    <div id="card" hidden>
+        <h2 id="cardCode"></h2>
+
+        <pre id="cardData"></pre>
+
+        <button id="exportButton">
+            Export Data
+        </button>
+    </div>
+
+    <button id="scanButton">
+        Scan Another Card
+    </button>
+
+    <script src="config.js"></script>
+    <script src="supabase.js"></script>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get("code");
+
+        const status = document.getElementById("status");
+        const card = document.getElementById("card");
+        const cardCode = document.getElementById("cardCode");
+        const cardData = document.getElementById("cardData");
+
+        let exportedData = null;
+
+        async function loadPublicCard() {
+            if (!code) {
+                status.textContent = "No card code provided.";
+                return;
+            }
+
+            const { data, error } =
+                await supabaseClient.rpc(
+                    "get_public_card_data",
+                    {
+                        requested_card_code: code
+                    }
+                );
+
+            if (error) {
+                status.textContent =
+                    "Could not load card: " + error.message;
+                return;
+            }
+
+            if (!data) {
+                status.textContent = "Card not found.";
+                return;
+            }
+
+            exportedData = data;
+
+            cardCode.textContent =
+                "Card: " + data.card_code;
+
+            cardData.textContent =
+                JSON.stringify(data.data || {}, null, 2);
+
+            card.hidden = false;
+            status.textContent = "";
+        }
+
+        document.getElementById("exportButton")
+            .addEventListener("click", () => {
+                if (!exportedData) {
+                    return;
+                }
+
+                const file = new Blob(
+                    [
+                        JSON.stringify(
+                            exportedData,
+                            null,
+                            2
+                        )
+                    ],
+                    {
+                        type: "application/json"
+                    }
+                );
+
+                const url = URL.createObjectURL(file);
+
+                const link = document.createElement("a");
+
+                link.href = url;
+                link.download =
+                    exportedData.card_code + ".json";
+
+                link.click();
+
+                URL.revokeObjectURL(url);
+            });
+
+        document.getElementById("scanButton")
+            .addEventListener("click", () => {
+                window.location.href = "scan.html";
+            });
+
+        loadPublicCard();
+    </script>
+
+</body>
+</html>
