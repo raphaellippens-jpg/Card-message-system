@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Card Scan — Card Message System</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+
+    <h1>Card Found</h1>
+
+    <p id="status">Checking card...</p>
+
+    <script src="config.js"></script>
+    <script src="supabase.js"></script>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get("code");
+
+        const status = document.getElementById("status");
+
+        async function handleCard() {
+            if (!code) {
+                status.textContent = "No card code found.";
+                return;
+            }
+
+            const {
+                data: { user }
+            } = await supabaseClient.auth.getUser();
+
+            const { data: card, error } =
+                await supabaseClient
+                    .from("cards")
+                    .select("id, card_code, owner_id")
+                    .eq("card_code", code)
+                    .maybeSingle();
+
+            if (error) {
+                status.textContent =
+                    "Could not find card: " + error.message;
+                return;
+            }
+
+            if (!card) {
+                status.textContent = "Card does not exist.";
+                return;
+            }
+
+            if (user && card.owner_id === user.id) {
+                window.location.href =
+                    "card.html?id=" +
+                    encodeURIComponent(card.id);
+
+                return;
+            }
+
+            window.location.href =
+                "public-card.html?code=" +
+                encodeURIComponent(card.card_code);
+        }
+
+        handleCard();
+    </script>
+
+</body>
+</html>
