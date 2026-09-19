@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Card — Card Message System</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+
+    <h1>Card</h1>
+
+    <p id="status">Loading card...</p>
+
+    <div id="cardInfo" hidden>
+        <p>
+            Card code:
+            <strong id="cardCode"></strong>
+        </p>
+
+        <div id="ownerArea"></div>
+        <div id="dataArea"></div>
+    </div>
+
+    <button id="scanAgain">
+        Scan another card
+    </button>
+
+    <script src="config.js"></script>
+    <script src="supabase.js"></script>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get("code");
+
+        const status = document.getElementById("status");
+        const cardInfo = document.getElementById("cardInfo");
+        const cardCodeElement = document.getElementById("cardCode");
+        const ownerArea = document.getElementById("ownerArea");
+        const dataArea = document.getElementById("dataArea");
+
+        async function loadCard() {
+            if (!code) {
+                status.textContent = "No card code was provided.";
+                return;
+            }
+
+            cardCodeElement.textContent = code;
+
+            const {
+                data: { user }
+            } = await supabaseClient.auth.getUser();
+
+            /*
+             * For now we only look up a card if the logged-in
+             * user owns it.
+             *
+             * Public-card viewing will be added through a secure
+             * Supabase function later. We deliberately don't expose
+             * the cards table publicly.
+             */
+
+            if (!user) {
+                ownerArea.textContent =
+                    "You are not logged in.";
+                dataArea.textContent =
+                    "Public card viewing will be available soon.";
+                cardInfo.hidden = false;
+                status.textContent = "";
+                return;
+            }
+
+            const { data: card, error } =
+                await supabaseClient
+                    .from("cards")
+                    .select("id, card_code, owner_id")
+                    .eq("card_code", code)
+                    .maybeSingle();
+
+            if (error) {
+                status.textContent =
+                    "Could not find card: " + error.message;
+                return;
+            }
+
+            if (!card) {
+                status.textContent = "Card not found.";
+                return;
+            }
+
+            if (card.owner_id === user.id) {
+                window.location.href =
+                    "card.html?id=" +
+                    encodeURIComponent(card.id);
+                return;
+            }
+
+            ownerArea.textContent =
+                "This card belongs to another account.";
+
+            dataArea.textContent =
+                "Public card viewing will be available soon.";
+
+            cardInfo.hidden = false;
+            status.textContent = "";
+        }
+
+        document.getElementById("scanAgain")
+            .addEventListener("click", () => {
+                window.location.href = "scan.html";
+            });
+
+        loadCard();
+    </script>
+
+</body>
+</html>
