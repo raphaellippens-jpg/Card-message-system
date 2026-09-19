@@ -2,25 +2,153 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Card Message System</title>
+
+    <link rel="stylesheet" href="style.css">
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
 
-    <h1>Card Message System</h1>
+    <nav>
+        <strong>🪪 Card Message System</strong>
 
-    <p id="status">Loading...</p>
+        <div class="nav-links">
+            <a class="button secondary" href="scan.html">
+                Scan Card
+            </a>
+
+            <a class="button secondary" href="auth.html">
+                Log In
+            </a>
+        </div>
+    </nav>
+
+    <main>
+
+        <section class="panel center">
+
+            <h1>Your cards.<br>Connected.</h1>
+
+            <p>
+                Create physical cards connected to your
+                digital data. Scan a card with your phone
+                to access its information.
+            </p>
+
+            <div class="row" style="justify-content:center; margin-top:24px;">
+
+                <a class="button" href="scan.html">
+                    📷 Scan a Card
+                </a>
+
+                <a class="button secondary" href="auth.html">
+                    👤 My Account
+                </a>
+
+            </div>
+
+        </section>
+
+        <div class="spacer"></div>
+
+        <section class="card-grid">
+
+            <div class="cms-card">
+                <h2>🪪 Physical Cards</h2>
+
+                <p>
+                    Every card gets its own unique code
+                    and QR code.
+                </p>
+            </div>
+
+            <div class="cms-card">
+                <h2>🔐 Your Data</h2>
+
+                <p>
+                    Your cards belong to your account,
+                    while each card keeps its own data.
+                </p>
+            </div>
+
+            <div class="cms-card">
+                <h2>📷 Scan Anywhere</h2>
+
+                <p>
+                    Scan a card with your phone and
+                    instantly identify the card.
+                </p>
+            </div>
+
+            <div class="cms-card">
+                <h2>📤 Export</h2>
+
+                <p>
+                    Public card information can be
+                    exported as a JSON file.
+                </p>
+            </div>
+
+        </section>
+
+        <div class="spacer"></div>
+
+        <section class="panel center">
+
+            <h2>How it works</h2>
+
+            <p>
+                Create an account → create a card →
+                print it → add your data → scan it.
+            </p>
+
+            <div class="row" style="justify-content:center;">
+
+                <a class="button" href="auth.html">
+                    Get Started
+                </a>
+
+                <a class="button secondary" href="scan.html">
+                    Scan Existing Card
+                </a>
+
+            </div>
+
+        </section>
+
+    </main>
 
     <script src="config.js"></script>
     <script src="supabase.js"></script>
 
     <script>
-        document.getElementById("status").textContent =
-            "Supabase connection loaded.";
+        async function checkLogin() {
+            const {
+                data: { user }
+            } = await supabaseClient.auth.getUser();
+
+            const accountButton =
+                document.querySelector(
+                    'a[href="auth.html"]'
+                );
+
+            if (user && accountButton) {
+                accountButton.textContent =
+                    "👤 My Dashboard";
+
+                accountButton.href =
+                    "dashboard.html";
+            }
+        }
+
+        checkLogin();
     </script>
 
 </body>
