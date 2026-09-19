@@ -2,103 +2,275 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Card Message System — Dashboard</title>
+
+    <link rel="stylesheet" href="style.css">
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
 
-    <h1>Card Message System</h1>
+    <nav>
+        <strong>🪪 Card Message System</strong>
 
-    <p id="account"></p>
+        <div class="nav-links">
+            <a class="button secondary" href="index.html">
+                Home
+            </a>
 
-    <button id="logoutButton">Log out</button>
+            <button id="logoutButton" class="danger">
+                Log out
+            </button>
+        </div>
+    </nav>
 
-    <hr>
+    <main>
 
-    <h2>Your Cards</h2>
+        <section class="panel">
 
-    <button id="createCardButton">
-        Create new card
-    </button>
+            <h1>Dashboard</h1>
 
-    <div id="cards">
-        Loading cards...
-    </div>
+            <p id="account">
+                Loading account...
+            </p>
 
-    <p id="message"></p>
+        </section>
+
+        <div class="spacer"></div>
+
+        <section class="panel">
+
+            <div class="row">
+
+                <div>
+                    <h2>Your Cards</h2>
+
+                    <p>
+                        Manage your physical cards and
+                        their connected data.
+                    </p>
+                </div>
+
+                <button id="createCardButton">
+                    ➕ Create New Card
+                </button>
+
+            </div>
+
+            <div
+                id="cards"
+                class="card-grid"
+                style="margin-top:24px;"
+            >
+                Loading cards...
+            </div>
+
+            <p id="message" class="status">
+                Ready.
+            </p>
+
+        </section>
+
+    </main>
 
     <script src="config.js"></script>
     <script src="supabase.js"></script>
 
     <script>
-        const account = document.getElementById("account");
-        const cardsContainer = document.getElementById("cards");
-        const message = document.getElementById("message");
+
+        const account =
+            document.getElementById("account");
+
+        const cardsContainer =
+            document.getElementById("cards");
+
+        const message =
+            document.getElementById("message");
+
 
         async function loadDashboard() {
+
             const {
                 data: { user },
                 error: userError
-            } = await supabaseClient.auth.getUser();
+            } =
+                await supabaseClient.auth.getUser();
+
 
             if (userError || !user) {
-                window.location.href = "auth.html";
+
+                window.location.href =
+                    "auth.html";
+
                 return;
             }
 
-            account.textContent = `Logged in as ${user.email}`;
 
-            const { data: cards, error } = await supabaseClient
-                .from("cards")
-                .select("id, card_code, created_at")
-                .eq("owner_id", user.id)
-                .order("created_at", { ascending: false });
+            account.textContent =
+                `Logged in as ${user.email}`;
+
+
+            const {
+                data: cards,
+                error
+            } =
+                await supabaseClient
+                    .from("cards")
+                    .select(
+                        "id, card_code, created_at"
+                    )
+                    .eq("owner_id", user.id)
+                    .order(
+                        "created_at",
+                        { ascending: false }
+                    );
+
 
             if (error) {
+
                 cardsContainer.textContent =
-                    "Could not load cards: " + error.message;
+                    "Could not load cards: " +
+                    error.message;
+
+                message.textContent =
+                    "There was a problem loading your cards.";
+
+                message.className =
+                    "status error";
+
                 return;
             }
 
+
             if (!cards || cards.length === 0) {
-                cardsContainer.textContent =
+
+                cardsContainer.innerHTML = `
+                    <div class="cms-card">
+                        <h3>No cards yet</h3>
+
+                        <p>
+                            Create your first card to
+                            get started.
+                        </p>
+                    </div>
+                `;
+
+                message.textContent =
                     "You don't have any cards yet.";
+
                 return;
             }
+
 
             cardsContainer.innerHTML = "";
 
+
             cards.forEach(card => {
-                const cardElement = document.createElement("div");
+
+                const cardElement =
+                    document.createElement("div");
+
+                cardElement.className =
+                    "cms-card";
+
 
                 cardElement.innerHTML = `
-                    <h3>Card</h3>
-                    <p>Code: <strong>${card.card_code}</strong></p>
-                    <p>Created: ${new Date(card.created_at).toLocaleString()}</p>
+
+                    <h3>🪪 Card</h3>
+
+                    <p>
+                        Code:
+                    </p>
+
+                    <span class="card-code">
+                        ${card.card_code}
+                    </span>
+
+                    <p>
+                        Created:
+                        ${new Date(
+                            card.created_at
+                        ).toLocaleString()}
+                    </p>
+
+                    <div class="row">
+
+                        <a
+                            class="button"
+                            href="card.html?id=${card.id}"
+                        >
+                            Open Card
+                        </a>
+
+                        <a
+                            class="button secondary"
+                            href="card-print.html?id=${card.id}"
+                        >
+                            🖨️ Print
+                        </a>
+
+                    </div>
+
                 `;
 
-                cardsContainer.appendChild(cardElement);
+
+                cardsContainer.appendChild(
+                    cardElement
+                );
+
             });
+
+
+            message.textContent =
+                `${cards.length} card${
+                    cards.length === 1
+                        ? ""
+                        : "s"
+                } found.`;
+
+            message.className =
+                "status success";
         }
 
-        document.getElementById("logoutButton")
-            .addEventListener("click", async () => {
 
-                await supabaseClient.auth.signOut();
+        document
+            .getElementById("logoutButton")
+            .addEventListener(
+                "click",
+                async () => {
 
-                window.location.href = "auth.html";
-            });
+                    await supabaseClient
+                        .auth
+                        .signOut();
 
-        document.getElementById("createCardButton")
-            .addEventListener("click", () => {
-                window.location.href = "create-card.html";
-            });
+                    window.location.href =
+                        "auth.html";
+                }
+            );
+
+
+        document
+            .getElementById("createCardButton")
+            .addEventListener(
+                "click",
+                () => {
+
+                    window.location.href =
+                        "create-card.html";
+
+                }
+            );
+
 
         loadDashboard();
+
     </script>
 
 </body>
