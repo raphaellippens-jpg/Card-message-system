@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -13,25 +15,41 @@
     <link rel="stylesheet" href="style.css">
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 </head>
+
 
 <body>
 
     <nav>
+
         <strong>🪪 Card Message System</strong>
 
         <div class="nav-links">
-            <a class="button secondary" href="index.html">
+
+            <a
+                class="button secondary"
+                href="index.html"
+            >
                 Home
             </a>
 
-            <button id="logoutButton" class="danger">
+            <button
+                id="logoutButton"
+                class="danger"
+            >
                 Log out
             </button>
+
         </div>
+
     </nav>
 
+
     <main>
+
+
+        <!-- ACCOUNT -->
 
         <section class="panel">
 
@@ -43,56 +61,78 @@
 
         </section>
 
+
         <div class="spacer"></div>
+
+
+        <!-- CARDS -->
 
         <section class="panel">
 
             <div class="row">
 
                 <div>
+
                     <h2>Your Cards</h2>
 
                     <p>
                         Manage your physical cards and
                         their connected data.
                     </p>
+
                 </div>
 
+
                 <button id="createCardButton">
+
                     ➕ Create New Card
+
                 </button>
 
             </div>
+
 
             <div
                 id="cards"
                 class="card-grid"
                 style="margin-top:24px;"
             >
+
                 Loading cards...
+
             </div>
 
-            <p id="message" class="status">
+
+            <p
+                id="message"
+                class="status"
+            >
                 Ready.
             </p>
 
         </section>
 
+
     </main>
+
 
     <script src="config.js"></script>
     <script src="supabase.js"></script>
+
 
     <script>
 
         const account =
             document.getElementById("account");
 
+
         const cardsContainer =
             document.getElementById("cards");
 
+
         const message =
             document.getElementById("message");
+
 
 
         async function loadDashboard() {
@@ -110,11 +150,13 @@
                     "auth.html";
 
                 return;
+
             }
 
 
             account.textContent =
                 `Logged in as ${user.email}`;
+
 
 
             const {
@@ -126,11 +168,17 @@
                     .select(
                         "id, card_code, created_at"
                     )
-                    .eq("owner_id", user.id)
+                    .eq(
+                        "owner_id",
+                        user.id
+                    )
                     .order(
                         "created_at",
-                        { ascending: false }
+                        {
+                            ascending: false
+                        }
                     );
+
 
 
             if (error) {
@@ -139,66 +187,99 @@
                     "Could not load cards: " +
                     error.message;
 
+
                 message.textContent =
                     "There was a problem loading your cards.";
+
 
                 message.className =
                     "status error";
 
+
                 return;
+
             }
 
 
-            if (!cards || cards.length === 0) {
+
+            if (
+                !cards ||
+                cards.length === 0
+            ) {
 
                 cardsContainer.innerHTML = `
+
                     <div class="cms-card">
-                        <h3>No cards yet</h3>
+
+                        <h3>
+                            No cards yet
+                        </h3>
 
                         <p>
-                            Create your first card to
-                            get started.
+                            Create your first card
+                            to get started.
                         </p>
+
                     </div>
+
                 `;
+
 
                 message.textContent =
                     "You don't have any cards yet.";
 
+
                 return;
+
             }
+
 
 
             cardsContainer.innerHTML = "";
 
 
+
             cards.forEach(card => {
+
 
                 const cardElement =
                     document.createElement("div");
+
 
                 cardElement.className =
                     "cms-card";
 
 
+
                 cardElement.innerHTML = `
 
-                    <h3>🪪 Card</h3>
+                    <h3>
+                        🪪 Card
+                    </h3>
+
 
                     <p>
                         Code:
                     </p>
 
+
                     <span class="card-code">
+
                         ${card.card_code}
+
                     </span>
 
+
                     <p>
+
                         Created:
+
                         ${new Date(
                             card.created_at
                         ).toLocaleString()}
+
                     </p>
+
 
                     <div class="row">
 
@@ -208,6 +289,7 @@
                         >
                             Open Card
                         </a>
+
 
                         <a
                             class="button secondary"
@@ -221,11 +303,13 @@
                 `;
 
 
+
                 cardsContainer.appendChild(
                     cardElement
                 );
 
             });
+
 
 
             message.textContent =
@@ -235,9 +319,12 @@
                         : "s"
                 } found.`;
 
+
             message.className =
                 "status success";
+
         }
+
 
 
         document
@@ -250,10 +337,13 @@
                         .auth
                         .signOut();
 
+
                     window.location.href =
                         "auth.html";
+
                 }
             );
+
 
 
         document
@@ -269,9 +359,12 @@
             );
 
 
+
         loadDashboard();
 
     </script>
 
+
 </body>
+
 </html>
