@@ -1,91 +1,257 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Scan Card — Card Message System</title>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="style.css">
 
     <script src="https://unpkg.com/html5-qrcode"></script>
 </head>
 
 <body>
 
-    <h1>Scan Card</h1>
+    <nav>
+        <strong>🪪 Card Message System</strong>
 
-    <div id="reader"></div>
+        <div class="nav-links">
+            <a
+                class="button secondary"
+                href="index.html"
+            >
+                Home
+            </a>
+        </div>
+    </nav>
 
-    <p id="status">Point your camera at a card QR code.</p>
 
-    <script src="config.js"></script>
-    <script src="supabase.js"></script>
+    <main>
+
+        <section
+            class="panel center"
+            style="max-width:650px;margin:40px auto;"
+        >
+
+            <h1>📷 Scan Card</h1>
+
+            <p>
+                Point your camera at the QR code
+                on a Card Message System card.
+            </p>
+
+
+            <div id="reader"></div>
+
+
+            <p
+                id="status"
+                class="status"
+            >
+                Starting camera...
+            </p>
+
+        </section>
+
+    </main>
+
 
     <script>
-        const status = document.getElementById("status");
 
-        let scanner;
+        const status =
+            document.getElementById("status");
+
+
+        let scanner = null;
+
 
         async function handleScan(decodedText) {
+
             if (!decodedText) {
                 return;
             }
 
-            status.textContent = "Card detected.";
+
+            status.textContent =
+                "✅ Card detected!";
+
 
             try {
+
                 if (scanner) {
                     await scanner.stop();
                 }
+
             } catch (error) {
-                console.log("Scanner stop:", error);
+
+                console.log(
+                    "Scanner stop:",
+                    error
+                );
+
             }
 
-            let cardCode = decodedText.trim();
 
-            // Supports either:
-            // CARD-1234-5678-ABCD
-            // or a future URL containing ?card=...
+            let cardCode =
+                decodedText.trim();
+
+
+            /*
+             * If the QR contains a URL such as:
+             *
+             * .../scan-result.html?code=XXXX
+             *
+             * extract the card code.
+             */
+
             try {
-                const url = new URL(cardCode);
+
+                const url =
+                    new URL(decodedText);
+
 
                 const urlCardCode =
-                    url.searchParams.get("card");
+                    url.searchParams.get(
+                        "code"
+                    ) ||
+                    url.searchParams.get(
+                        "card"
+                    );
+
 
                 if (urlCardCode) {
-                    cardCode = urlCardCode;
+
+                    cardCode =
+                        urlCardCode;
+
                 }
+
             } catch {
-                // The QR code wasn't a URL.
-                // Treat the entire value as the card code.
+
+                // QR contained plain text.
             }
+
 
             window.location.href =
-                "card-view.html?code=" +
-                encodeURIComponent(cardCode);
+                "scan-result.html?code=" +
+                encodeURIComponent(
+                    cardCode
+                );
+
         }
 
-        scanner = new Html5Qrcode("reader");
 
-        scanner.start(
-            { facingMode: "environment" },
-            {
-                fps: 10,
-                qrbox: {
-                    width: 250,
-                    height: 250
+
+        async function startScanner() {
+
+            scanner =
+                new Html5Qrcode(
+                    "reader"
+                );
+
+
+            try {
+
+                const cameras =
+                    await Html5Qrcode
+                        .getCameras();
+
+
+                if (
+                    !cameras ||
+                    cameras.length === 0
+                ) {
+
+                    status.textContent =
+                        "❌ No camera was found.";
+
+                    status.className =
+                        "status error";
+
+                    return;
+
                 }
-            },
-            handleScan,
-            () => {
-                // Ignore individual failed scans.
+
+
+                /*
+                 * Prefer the rear camera.
+                 */
+
+                let cameraId =
+                    cameras[0].id;
+
+
+                const backCamera =
+                    cameras.find(
+                        camera =>
+                            /back|rear|environment/i
+                                .test(
+                                    camera.label
+                                )
+                    );
+
+
+                if (backCamera) {
+
+                    cameraId =
+                        backCamera.id;
+
+                }
+
+
+                await scanner.start(
+
+                    cameraId,
+
+                    {
+                        fps: 10,
+
+                        qrbox: {
+                            width: 250,
+                            height: 250
+                        }
+                    },
+
+                    handleScan,
+
+                    () => {}
+
+                );
+
+
+                status.textContent =
+                    "Point your camera at the QR code.";
+
+                status.className =
+                    "status";
+
+            } catch (error) {
+
+                console.error(error);
+
+
+                status.textContent =
+                    "❌ Camera could not be started: " +
+                    error.message;
+
+                status.className =
+                    "status error";
+
             }
-        ).catch(error => {
-            status.textContent =
-                "Camera could not be started: " + error;
-        });
+
+        }
+
+
+        startScanner();
+
     </script>
 
 </body>
+
 </html>
