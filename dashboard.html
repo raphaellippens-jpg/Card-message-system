@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Card Message System — Dashboard</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+
+    <h1>Card Message System</h1>
+
+    <p id="account"></p>
+
+    <button id="logoutButton">Log out</button>
+
+    <hr>
+
+    <h2>Your Cards</h2>
+
+    <button id="createCardButton">
+        Create new card
+    </button>
+
+    <div id="cards">
+        Loading cards...
+    </div>
+
+    <p id="message"></p>
+
+    <script src="config.js"></script>
+    <script src="supabase.js"></script>
+
+    <script>
+        const account = document.getElementById("account");
+        const cardsContainer = document.getElementById("cards");
+        const message = document.getElementById("message");
+
+        async function loadDashboard() {
+            const {
+                data: { user },
+                error: userError
+            } = await supabaseClient.auth.getUser();
+
+            if (userError || !user) {
+                window.location.href = "auth.html";
+                return;
+            }
+
+            account.textContent = `Logged in as ${user.email}`;
+
+            const { data: cards, error } = await supabaseClient
+                .from("cards")
+                .select("id, card_code, created_at")
+                .eq("owner_id", user.id)
+                .order("created_at", { ascending: false });
+
+            if (error) {
+                cardsContainer.textContent =
+                    "Could not load cards: " + error.message;
+                return;
+            }
+
+            if (!cards || cards.length === 0) {
+                cardsContainer.textContent =
+                    "You don't have any cards yet.";
+                return;
+            }
+
+            cardsContainer.innerHTML = "";
+
+            cards.forEach(card => {
+                const cardElement = document.createElement("div");
+
+                cardElement.innerHTML = `
+                    <h3>Card</h3>
+                    <p>Code: <strong>${card.card_code}</strong></p>
+                    <p>Created: ${new Date(card.created_at).toLocaleString()}</p>
+                `;
+
+                cardsContainer.appendChild(cardElement);
+            });
+        }
+
+        document.getElementById("logoutButton")
+            .addEventListener("click", async () => {
+
+                await supabaseClient.auth.signOut();
+
+                window.location.href = "auth.html";
+            });
+
+        document.getElementById("createCardButton")
+            .addEventListener("click", () => {
+                window.location.href = "create-card.html";
+            });
+
+        loadDashboard();
+    </script>
+
+</body>
+</html>
