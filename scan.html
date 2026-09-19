@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -12,8 +13,6 @@
     <title>Scan Card — Card Message System</title>
 
     <link rel="stylesheet" href="style.css">
-
-    <script src="https://unpkg.com/html5-qrcode"></script>
 </head>
 
 <body>
@@ -39,218 +38,56 @@
             style="max-width:650px;margin:40px auto;"
         >
 
-            <h1>📷 Scan Card</h1>
+            <h1>📷 Scan a Card</h1>
 
             <p>
-                Point your camera at the QR code
-                on a Card Message System card.
+                Use your device's Camera app to scan
+                the QR code on the card.
             </p>
 
 
-            <div id="reader"></div>
+            <div
+                class="cms-card"
+                style="margin-top:24px;"
+            >
+
+                <h2>How to scan</h2>
+
+                <p>
+                    1. Open the <strong>Camera</strong> app.
+                </p>
+
+                <p>
+                    2. Point it at the QR code.
+                </p>
+
+                <p>
+                    3. Tap the notification/link that
+                    appears.
+                </p>
+
+            </div>
 
 
             <p
-                id="status"
                 class="status"
+                style="margin-top:24px;"
             >
-                Starting camera...
+                📱 The Camera app will handle the QR scan.
             </p>
+
+
+            <a
+                class="button secondary"
+                href="index.html"
+                style="margin-top:16px;"
+            >
+                ← Back Home
+            </a>
 
         </section>
 
     </main>
-
-
-    <script>
-
-        const status =
-            document.getElementById("status");
-
-
-        let scanner = null;
-
-
-        async function handleScan(decodedText) {
-
-            if (!decodedText) {
-                return;
-            }
-
-
-            status.textContent =
-                "✅ Card detected!";
-
-
-            try {
-
-                if (scanner) {
-                    await scanner.stop();
-                }
-
-            } catch (error) {
-
-                console.log(
-                    "Scanner stop:",
-                    error
-                );
-
-            }
-
-
-            let cardCode =
-                decodedText.trim();
-
-
-            /*
-             * If the QR contains a URL such as:
-             *
-             * .../scan-result.html?code=XXXX
-             *
-             * extract the card code.
-             */
-
-            try {
-
-                const url =
-                    new URL(decodedText);
-
-
-                const urlCardCode =
-                    url.searchParams.get(
-                        "code"
-                    ) ||
-                    url.searchParams.get(
-                        "card"
-                    );
-
-
-                if (urlCardCode) {
-
-                    cardCode =
-                        urlCardCode;
-
-                }
-
-            } catch {
-
-                // QR contained plain text.
-            }
-
-
-            window.location.href =
-                "scan-result.html?code=" +
-                encodeURIComponent(
-                    cardCode
-                );
-
-        }
-
-
-
-        async function startScanner() {
-
-            scanner =
-                new Html5Qrcode(
-                    "reader"
-                );
-
-
-            try {
-
-                const cameras =
-                    await Html5Qrcode
-                        .getCameras();
-
-
-                if (
-                    !cameras ||
-                    cameras.length === 0
-                ) {
-
-                    status.textContent =
-                        "❌ No camera was found.";
-
-                    status.className =
-                        "status error";
-
-                    return;
-
-                }
-
-
-                /*
-                 * Prefer the rear camera.
-                 */
-
-                let cameraId =
-                    cameras[0].id;
-
-
-                const backCamera =
-                    cameras.find(
-                        camera =>
-                            /back|rear|environment/i
-                                .test(
-                                    camera.label
-                                )
-                    );
-
-
-                if (backCamera) {
-
-                    cameraId =
-                        backCamera.id;
-
-                }
-
-
-                await scanner.start(
-
-                    cameraId,
-
-                    {
-                        fps: 10,
-
-                        qrbox: {
-                            width: 250,
-                            height: 250
-                        }
-                    },
-
-                    handleScan,
-
-                    () => {}
-
-                );
-
-
-                status.textContent =
-                    "Point your camera at the QR code.";
-
-                status.className =
-                    "status";
-
-            } catch (error) {
-
-                console.error(error);
-
-
-                status.textContent =
-                    "❌ Camera could not be started: " +
-                    error.message;
-
-                status.className =
-                    "status error";
-
-            }
-
-        }
-
-
-        startScanner();
-
-    </script>
 
 </body>
 
