@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -14,14 +15,19 @@
     <link rel="stylesheet" href="style.css">
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
 </head>
+
 
 <body>
 
     <nav>
 
-        <strong>🪪 Card Message System</strong>
+        <strong>
+            🪪 Card Message System
+        </strong>
 
         <div class="nav-links">
 
@@ -44,8 +50,12 @@
             <h1>🪪 Card Editor</h1>
 
             <p>
-                Manage your card and its connected data.
+                Manage your card and everything connected
+                to it.
             </p>
+
+
+            <!-- CARD CODE -->
 
             <div
                 class="cms-card"
@@ -132,6 +142,61 @@
             </div>
 
 
+            <!-- AUTHORIZED USERS -->
+
+            <div
+                class="cms-card"
+                style="margin-top:18px;"
+            >
+
+                <h2>🔐 Authorized Users</h2>
+
+                <p>
+                    Only accounts added here will be allowed
+                    to access this card.
+                </p>
+
+
+                <form id="addUserForm">
+
+                    <label for="userEmail">
+                        Account email
+                    </label>
+
+                    <input
+                        id="userEmail"
+                        type="email"
+                        placeholder="person@example.com"
+                        autocomplete="off"
+                        required
+                    >
+
+
+                    <button type="submit">
+                        ➕ Add Authorized User
+                    </button>
+
+                </form>
+
+
+                <div
+                    id="authorizedUsers"
+                    style="margin-top:20px;"
+                >
+                    Loading authorized users...
+                </div>
+
+
+                <p
+                    id="authStatus"
+                    class="status"
+                >
+                    Loading...
+                </p>
+
+            </div>
+
+
             <!-- CARD ACTIONS -->
 
             <div
@@ -177,7 +242,9 @@
 
 
     <script src="config.js"></script>
+
     <script src="supabase.js"></script>
+
     <script src="card-data.js"></script>
 
 
@@ -188,6 +255,7 @@
                 window.location.search
             );
 
+
         const cardId =
             params.get("id");
 
@@ -197,39 +265,77 @@
                 "cardCode"
             );
 
+
         const cardText =
             document.getElementById(
                 "cardText"
             );
+
 
         const status =
             document.getElementById(
                 "status"
             );
 
+
+        const authStatus =
+            document.getElementById(
+                "authStatus"
+            );
+
+
+        const authorizedUsers =
+            document.getElementById(
+                "authorizedUsers"
+            );
+
+
+        const userEmail =
+            document.getElementById(
+                "userEmail"
+            );
+
+
+        const addUserForm =
+            document.getElementById(
+                "addUserForm"
+            );
+
+
         const saveButton =
             document.getElementById(
                 "saveButton"
             );
+
 
         const deleteDataButton =
             document.getElementById(
                 "deleteDataButton"
             );
 
+
         const deleteCardButton =
             document.getElementById(
                 "deleteCardButton"
             );
+
 
         const printButton =
             document.getElementById(
                 "printButton"
             );
 
+
         let currentDataId = null;
 
 
+        let currentUser = null;
+
+
+
+        /*
+         * LOAD CARD
+         */
 
         async function loadCard() {
 
@@ -247,7 +353,9 @@
 
 
             const {
-                data: { user }
+                data: {
+                    user
+                }
             } =
                 await supabaseClient
                     .auth
@@ -262,6 +370,9 @@
                 return;
 
             }
+
+
+            currentUser = user;
 
 
             const {
@@ -323,8 +434,7 @@
 
 
             /*
-             * QR points directly to the
-             * public scan-result page.
+             * QR CODE
              */
 
             const qrUrl =
@@ -354,6 +464,10 @@
             );
 
 
+            /*
+             * CARD DATA
+             */
+
             try {
 
                 const data =
@@ -378,13 +492,6 @@
                 }
 
 
-                status.textContent =
-                    "Card loaded.";
-
-                status.className =
-                    "status success";
-
-
             } catch (error) {
 
                 status.textContent =
@@ -394,11 +501,448 @@
                 status.className =
                     "status error";
 
+                return;
+
             }
+
+
+            /*
+             * AUTHORIZED USERS
+             */
+
+            await loadAuthorizedUsers();
+
+
+            status.textContent =
+                "Card loaded.";
+
+            status.className =
+                "status success";
 
         }
 
 
+
+        /*
+         * LOAD AUTHORIZED USERS
+         */
+
+        async function loadAuthorizedUsers() {
+
+            authorizedUsers.innerHTML =
+                "Loading...";
+
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+                    .from(
+                        "card_authorized_users"
+                    )
+                    .select(
+                        "id, user_id, created_at"
+                    )
+                    .eq(
+                        "card_id",
+                        cardId
+                    )
+                    .order(
+                        "created_at",
+                        {
+                            ascending: true
+                        }
+                    );
+
+
+            if (error) {
+
+                authorizedUsers.textContent =
+                    "Could not load authorized users: " +
+                    error.message;
+
+                authStatus.textContent =
+                    error.message;
+
+                authStatus.className =
+                    "status error";
+
+                return;
+
+            }
+
+
+            if (
+                !data ||
+                data.length === 0
+            ) {
+
+                authorizedUsers.innerHTML = `
+
+                    <div class="cms-card">
+
+                        <p>
+                            No additional users are
+                            authorized yet.
+                        </p>
+
+                        <p>
+                            The card owner always has
+                            access.
+                        </p>
+
+                    </div>
+
+                `;
+
+
+                authStatus.textContent =
+                    "No additional authorized users.";
+
+                authStatus.className =
+                    "status";
+
+                return;
+
+            }
+
+
+            authorizedUsers.innerHTML = "";
+
+
+            /*
+             * Get email addresses through the
+             * controlled lookup function.
+             *
+             * The function searches by email,
+             * so we don't expose auth.users.
+             *
+             * For displaying existing users,
+             * we use their user IDs as the
+             * identifier until a dedicated
+             * safe lookup function is added.
+             */
+
+            for (
+                const entry of data
+            ) {
+
+                const userElement =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                userElement.className =
+                    "cms-card";
+
+
+                userElement.style.marginBottom =
+                    "10px";
+
+
+                userElement.innerHTML = `
+
+                    <div
+                        style="
+                            display:flex;
+                            align-items:center;
+                            justify-content:space-between;
+                            gap:12px;
+                        "
+                    >
+
+                        <div>
+
+                            <strong>
+                                👤 Authorized account
+                            </strong>
+
+                            <p
+                                style="
+                                    margin-bottom:0;
+                                    font-size:12px;
+                                    word-break:break-all;
+                                "
+                            >
+                                User ID:
+                                ${entry.user_id}
+                            </p>
+
+                        </div>
+
+
+                        <button
+                            class="danger remove-user"
+                            data-id="${entry.id}"
+                        >
+                            Remove
+                        </button>
+
+                    </div>
+
+                `;
+
+
+                authorizedUsers.appendChild(
+                    userElement
+                );
+
+            }
+
+
+            document
+                .querySelectorAll(
+                    ".remove-user"
+                )
+                .forEach(
+                    button => {
+
+                        button.addEventListener(
+                            "click",
+                            () =>
+                                removeAuthorizedUser(
+                                    button.dataset.id
+                                )
+                        );
+
+                    }
+                );
+
+
+            authStatus.textContent =
+                `${data.length} authorized user${
+                    data.length === 1
+                        ? ""
+                        : "s"
+                }.`;
+
+            authStatus.className =
+                "status success";
+
+        }
+
+
+
+        /*
+         * ADD AUTHORIZED USER
+         */
+
+        addUserForm.addEventListener(
+            "submit",
+            async event => {
+
+                event.preventDefault();
+
+
+                const email =
+                    userEmail.value
+                        .trim()
+                        .toLowerCase();
+
+
+                if (!email) {
+                    return;
+                }
+
+
+                authStatus.textContent =
+                    "Finding account...";
+
+                authStatus.className =
+                    "status";
+
+
+                /*
+                 * Find the Supabase user ID
+                 * using our secure function.
+                 */
+
+                const {
+                    data: foundUserId,
+                    error: lookupError
+                } =
+                    await supabaseClient
+                        .rpc(
+                            "find_user_by_email",
+                            {
+                                requested_email:
+                                    email
+                            }
+                        );
+
+
+                if (lookupError) {
+
+                    authStatus.textContent =
+                        "Could not find account: " +
+                        lookupError.message;
+
+                    authStatus.className =
+                        "status error";
+
+                    return;
+
+                }
+
+
+                if (!foundUserId) {
+
+                    authStatus.textContent =
+                        "No account exists with that email.";
+
+                    authStatus.className =
+                        "status error";
+
+                    return;
+
+                }
+
+
+                if (
+                    foundUserId ===
+                    currentUser.id
+                ) {
+
+                    authStatus.textContent =
+                        "You already own this card.";
+
+                    authStatus.className =
+                        "status error";
+
+                    return;
+
+                }
+
+
+                /*
+                 * Add the user.
+                 */
+
+                const {
+                    error: insertError
+                } =
+                    await supabaseClient
+                        .from(
+                            "card_authorized_users"
+                        )
+                        .insert({
+                            card_id:
+                                cardId,
+
+                            user_id:
+                                foundUserId
+                        });
+
+
+                if (insertError) {
+
+                    if (
+                        insertError.code ===
+                        "23505"
+                    ) {
+
+                        authStatus.textContent =
+                            "That account is already authorized.";
+
+                    } else {
+
+                        authStatus.textContent =
+                            "Could not authorize account: " +
+                            insertError.message;
+
+                    }
+
+
+                    authStatus.className =
+                        "status error";
+
+                    return;
+
+                }
+
+
+                userEmail.value = "";
+
+
+                authStatus.textContent =
+                    "Account authorized successfully.";
+
+                authStatus.className =
+                    "status success";
+
+
+                await loadAuthorizedUsers();
+
+            }
+        );
+
+
+
+        /*
+         * REMOVE AUTHORIZED USER
+         */
+
+        async function removeAuthorizedUser(
+            authorizationId
+        ) {
+
+            if (
+                !confirm(
+                    "Remove this user's access to the card?"
+                )
+            ) {
+
+                return;
+
+            }
+
+
+            const {
+                error
+            } =
+                await supabaseClient
+                    .from(
+                        "card_authorized_users"
+                    )
+                    .delete()
+                    .eq(
+                        "id",
+                        authorizationId
+                    );
+
+
+            if (error) {
+
+                authStatus.textContent =
+                    "Could not remove user: " +
+                    error.message;
+
+                authStatus.className =
+                    "status error";
+
+                return;
+
+            }
+
+
+            authStatus.textContent =
+                "User removed.";
+
+            authStatus.className =
+                "status success";
+
+
+            await loadAuthorizedUsers();
+
+        }
+
+
+
+        /*
+         * SAVE DATA
+         */
 
         saveButton.addEventListener(
             "click",
@@ -461,6 +1005,10 @@
         );
 
 
+
+        /*
+         * DELETE CARD DATA
+         */
 
         deleteDataButton.addEventListener(
             "click",
@@ -534,6 +1082,10 @@
 
 
 
+        /*
+         * DELETE ENTIRE CARD
+         */
+
         deleteCardButton.addEventListener(
             "click",
             async () => {
@@ -592,7 +1144,6 @@
 
             }
         );
-
 
 
         loadCard();
