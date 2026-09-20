@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -9,7 +10,7 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Card Designer — Card Message System</title>
+    <title>Design Card — Card Message System</title>
 
     <link rel="stylesheet" href="style.css">
 
@@ -28,7 +29,7 @@
         .controls {
             display: flex;
             flex-direction: column;
-            gap: 14px;
+            gap: 18px;
         }
 
         .control-group {
@@ -41,196 +42,60 @@
             margin: 0;
         }
 
-        input[type="color"] {
-            height: 48px;
-            padding: 4px;
-            cursor: pointer;
+        .section-title {
+            margin: 10px 0 0;
+            font-size: 16px;
+        }
+
+        .small-note {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .dimension-value {
+            text-align: center;
+            font-weight: 700;
         }
 
         input[type="range"] {
             width: 100%;
+            cursor: pointer;
         }
 
-        .dimension-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
+        input[type="color"] {
+            width: 100%;
+            height: 46px;
+            padding: 4px;
+            cursor: pointer;
         }
 
-        .dimension-input {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .dimension-input label {
-            font-size: 13px;
-            color: var(--muted);
-        }
-
-        .preset-row {
+        .preset-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 8px;
         }
 
-        .preset-row button {
+        .preset-grid button {
             min-height: 40px;
-            padding: 8px 10px;
+            padding: 8px;
             font-size: 13px;
         }
 
-        .preview-area {
-            position: sticky;
-            top: 90px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 500px;
-            padding: 20px;
-            background:
-                repeating-conic-gradient(
-                    #222 0% 25%,
-                    #181818 0% 50%
-                ) 50% / 20px 20px;
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            overflow: auto;
+        .position-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
         }
 
-        .physical-card {
-            width: 600px;
-            height: 380px;
-
-            min-width: 80px;
-            min-height: 50px;
-
-            position: relative;
-
-            padding: 34px;
-
-            border-radius: 28px;
-
-            background: #151922;
-            color: white;
-
-            box-shadow:
-                0 25px 60px rgba(0, 0, 0, 0.45);
-
-            overflow: hidden;
-
-            display: flex;
-            flex-direction: column;
-
-            flex-shrink: 0;
-        }
-
-        .physical-card::after {
-            content: "";
-
-            position: absolute;
-
-            width: 220px;
-            height: 220px;
-
-            right: -80px;
-            bottom: -80px;
-
-            border-radius: 50%;
-
-            background: var(--card-accent);
-
-            opacity: 0.16;
-        }
-
-        .card-top {
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
-
-            position: relative;
-            z-index: 2;
-        }
-
-        .card-title {
-            margin: 0;
-
-            font-size: 32px;
-            font-weight: 800;
-
-            word-break: break-word;
-        }
-
-        .card-name {
-            margin-top: 5px;
-
-            opacity: 0.7;
-            font-size: 14px;
-
-            word-break: break-word;
-        }
-
-        .card-message {
-            position: relative;
-            z-index: 2;
-
-            flex: 1;
-
-            display: flex;
-            align-items: center;
-
-            font-size: 24px;
-            line-height: 1.35;
-
-            white-space: pre-wrap;
-            word-break: break-word;
-
-            padding-right: 130px;
-        }
-
-        .card-qr {
-            position: absolute;
-
-            right: 28px;
-            bottom: 54px;
-
-            width: 100px;
-            height: 100px;
-
-            padding: 7px;
-
-            background: white;
-            border-radius: 12px;
-
-            z-index: 5;
-        }
-
-        .card-qr img {
-            width: 100%;
-            height: 100%;
-        }
-
-        .card-code-display {
-            position: absolute;
-
-            left: 34px;
-            bottom: 22px;
-
-            font-family:
-                ui-monospace,
-                SFMono-Regular,
-                Menlo,
-                Monaco,
-                Consolas,
-                monospace;
-
+        .position-grid button {
+            min-height: 40px;
+            padding: 6px;
             font-size: 12px;
+        }
 
-            letter-spacing: 2px;
-
-            opacity: 0.7;
-
-            z-index: 5;
+        .position-grid button.active {
+            outline: 2px solid var(--accent);
+            background: var(--accent);
         }
 
         .switch-row {
@@ -249,10 +114,234 @@
             height: 20px;
         }
 
-        .preview-size {
-            color: var(--muted);
-            font-size: 13px;
+        .preview-area {
+            position: sticky;
+            top: 90px;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            min-height: 600px;
+            padding: 30px;
+
+            background:
+                repeating-conic-gradient(
+                    #222 0% 25%,
+                    #181818 0% 50%
+                ) 50% / 20px 20px;
+
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+
+            overflow: auto;
         }
+
+        .card-stage {
+            position: relative;
+
+            width: 600px;
+            height: 380px;
+
+            flex-shrink: 0;
+        }
+
+        .physical-card {
+            position: absolute;
+
+            left: 0;
+            top: 0;
+
+            width: 600px;
+            height: 380px;
+
+            background: #151922;
+            color: white;
+
+            border: 0 solid #ffffff;
+            border-radius: 28px;
+
+            box-shadow:
+                0 25px 60px rgba(0, 0, 0, 0.45);
+
+            overflow: hidden;
+
+            --card-accent: #6c8cff;
+        }
+
+        .physical-card::after {
+            content: "";
+
+            position: absolute;
+
+            width: 220px;
+            height: 220px;
+
+            right: -80px;
+            bottom: -80px;
+
+            border-radius: 50%;
+
+            background: var(--card-accent);
+
+            opacity: 0.16;
+
+            pointer-events: none;
+        }
+
+        /*
+         * DRAGGABLE ELEMENTS
+         */
+
+        .drag-item {
+            position: absolute;
+
+            z-index: 10;
+
+            cursor: grab;
+
+            user-select: none;
+            touch-action: none;
+
+            outline: 1px dashed transparent;
+
+            transition:
+                outline-color .12s ease,
+                background .12s ease;
+        }
+
+        .drag-item:hover {
+            outline-color: rgba(255,255,255,.3);
+        }
+
+        .drag-item.dragging {
+            cursor: grabbing;
+
+            outline:
+                2px dashed
+                var(--accent);
+
+            background:
+                rgba(108,140,255,.10);
+        }
+
+        .drag-title {
+            font-size: 32px;
+            font-weight: 800;
+
+            margin: 0;
+
+            word-break: break-word;
+        }
+
+        .drag-name {
+            font-size: 14px;
+
+            opacity: .7;
+
+            word-break: break-word;
+        }
+
+        .drag-extra {
+            font-size: 13px;
+
+            opacity: .7;
+
+            word-break: break-word;
+        }
+
+        .drag-message {
+            width: 280px;
+
+            font-size: 24px;
+            line-height: 1.35;
+
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .drag-qr {
+            width: 100px;
+            height: 100px;
+
+            padding: 7px;
+
+            background: white;
+
+            border-radius: 12px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+        }
+
+        .drag-qr img {
+            width: 100%;
+            height: 100%;
+        }
+
+        .drag-code {
+            font-family:
+                ui-monospace,
+                SFMono-Regular,
+                Menlo,
+                Monaco,
+                Consolas,
+                monospace;
+
+            font-size: 12px;
+
+            letter-spacing: 2px;
+
+            opacity: .7;
+
+            max-width: 250px;
+
+            word-break: break-all;
+        }
+
+        .drag-badge {
+            padding: 7px 11px;
+
+            border-radius: 999px;
+
+            background: rgba(0,0,0,.55);
+
+            border:
+                1px solid
+                rgba(255,255,255,.25);
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+            white-space: nowrap;
+
+            backdrop-filter: blur(6px);
+        }
+
+        /*
+         * DRAG HELP
+         */
+
+        .drag-help {
+            margin-top: 10px;
+
+            padding: 10px 12px;
+
+            border-radius: 10px;
+
+            background: var(--surface-2);
+
+            color: var(--muted);
+
+            font-size: 12px;
+        }
+
+        /*
+         * MOBILE
+         */
 
         @media (max-width: 850px) {
 
@@ -262,43 +351,13 @@
 
             .preview-area {
                 position: static;
-                min-height: 400px;
             }
 
         }
 
-        @media (max-width: 600px) {
-
-            .physical-card {
-                padding: 22px;
-                border-radius: 20px;
-            }
-
-            .card-title {
-                font-size: 22px;
-            }
-
-            .card-message {
-                font-size: 16px;
-                padding-right: 90px;
-            }
-
-            .card-qr {
-                width: 75px;
-                height: 75px;
-
-                right: 18px;
-                bottom: 42px;
-            }
-
-            .card-code-display {
-                left: 22px;
-                bottom: 15px;
-
-                font-size: 9px;
-            }
-
-        }
+        /*
+         * PRINT
+         */
 
         @media print {
 
@@ -314,8 +373,8 @@
                 display: none !important;
             }
 
-            #printCard {
-                display: flex !important;
+            #cardStage {
+                display: block !important;
 
                 position: absolute;
 
@@ -323,11 +382,15 @@
                 top: 0;
 
                 margin: 0;
+            }
 
-                box-shadow: none;
+            #printCard {
+                box-shadow: none !important;
+            }
 
-                max-width: none !important;
-                max-height: none !important;
+            .drag-item {
+                outline: none !important;
+                background: transparent !important;
             }
 
         }
@@ -371,152 +434,155 @@
 
         <section class="panel">
 
-            <h1>🎨 Card Designer</h1>
+            <h1>
+                🎨 Design Card
+            </h1>
 
             <p>
-                Customize your physical card and
-                see the result live.
+                Design your physical card.
+                Drag elements directly around the preview.
             </p>
 
 
             <div class="designer">
 
 
+                <!-- ========================= -->
                 <!-- CONTROLS -->
+                <!-- ========================= -->
 
                 <div class="panel">
 
-                    <h2>Customize</h2>
+                    <h2>
+                        Customize
+                    </h2>
 
 
                     <div class="controls">
 
 
-                        <!-- CARD SIZE -->
+                        <!-- SIZE -->
+
+                        <h3 class="section-title">
+                            📏 Card Size
+                        </h3>
+
 
                         <div class="control-group">
 
-                            <label>
-                                📏 Card size
+                            <label for="widthSlider">
+                                Width
                             </label>
 
-
-                            <div class="preset-row">
-
-                                <button
-                                    type="button"
-                                    class="secondary size-preset"
-                                    data-width="350"
-                                    data-height="220"
-                                >
-                                    Standard
-                                </button>
-
-                                <button
-                                    type="button"
-                                    class="secondary size-preset"
-                                    data-width="1013"
-                                    data-height="638"
-                                >
-                                    Business
-                                </button>
-
-                                <button
-                                    type="button"
-                                    class="secondary size-preset"
-                                    data-width="794"
-                                    data-height="1123"
-                                >
-                                    A6
-                                </button>
-
-                                <button
-                                    type="button"
-                                    class="secondary size-preset"
-                                    data-width="1123"
-                                    data-height="1587"
-                                >
-                                    A5
-                                </button>
-
-                            </div>
-
-
-                            <div
-                                class="dimension-row"
-                                style="margin-top:10px;"
+                            <input
+                                id="widthSlider"
+                                type="range"
+                                min="200"
+                                max="1500"
+                                value="600"
                             >
-
-                                <div class="dimension-input">
-
-                                    <label for="cardWidth">
-                                        Width (px)
-                                    </label>
-
-                                    <input
-                                        id="cardWidth"
-                                        type="number"
-                                        min="80"
-                                        max="3000"
-                                        value="600"
-                                    >
-
-                                </div>
-
-
-                                <div class="dimension-input">
-
-                                    <label for="cardHeight">
-                                        Height (px)
-                                    </label>
-
-                                    <input
-                                        id="cardHeight"
-                                        type="number"
-                                        min="50"
-                                        max="3000"
-                                        value="380"
-                                    >
-
-                                </div>
-
-                            </div>
-
-
-                            <div
-                                class="switch-row"
-                                style="margin-top:8px;"
-                            >
-
-                                <label for="lockRatio">
-                                    🔒 Lock ratio
-                                </label>
-
-                                <input
-                                    id="lockRatio"
-                                    class="checkbox"
-                                    type="checkbox"
-                                >
-
-                            </div>
-
 
                             <span
-                                id="dimensionValue"
-                                class="preview-size"
+                                id="widthValue"
+                                class="dimension-value"
                             >
-                                600 × 380 px
+                                600 px
                             </span>
 
                         </div>
 
 
-                        <!-- TITLE -->
+                        <div class="control-group">
+
+                            <label for="heightSlider">
+                                Height
+                            </label>
+
+                            <input
+                                id="heightSlider"
+                                type="range"
+                                min="120"
+                                max="1000"
+                                value="380"
+                            >
+
+                            <span
+                                id="heightValue"
+                                class="dimension-value"
+                            >
+                                380 px
+                            </span>
+
+                        </div>
+
+
+                        <div class="switch-row">
+
+                            <label for="lockRatio">
+                                🔒 Lock ratio
+                            </label>
+
+                            <input
+                                id="lockRatio"
+                                class="checkbox"
+                                type="checkbox"
+                            >
+
+                        </div>
+
+
+                        <div class="preset-grid">
+
+                            <button
+                                type="button"
+                                class="secondary"
+                                data-width="600"
+                                data-height="380"
+                            >
+                                Standard
+                            </button>
+
+                            <button
+                                type="button"
+                                class="secondary"
+                                data-width="1013"
+                                data-height="638"
+                            >
+                                Business
+                            </button>
+
+                            <button
+                                type="button"
+                                class="secondary"
+                                data-width="794"
+                                data-height="1123"
+                            >
+                                A6
+                            </button>
+
+                            <button
+                                type="button"
+                                class="secondary"
+                                data-width="1123"
+                                data-height="1587"
+                            >
+                                A5
+                            </button>
+
+                        </div>
+
+
+                        <!-- CONTENT -->
+
+                        <h3 class="section-title">
+                            ✏️ Content
+                        </h3>
+
 
                         <div class="control-group">
 
                             <label for="titleInput">
-                                Card title
+                                Main title
                             </label>
 
                             <input
@@ -529,12 +595,26 @@
                         </div>
 
 
-                        <!-- NAME -->
+                        <div class="switch-row">
+
+                            <label for="showTitle">
+                                👁️ Show title
+                            </label>
+
+                            <input
+                                id="showTitle"
+                                class="checkbox"
+                                type="checkbox"
+                                checked
+                            >
+
+                        </div>
+
 
                         <div class="control-group">
 
                             <label for="nameInput">
-                                Name
+                                Owner / name
                             </label>
 
                             <input
@@ -547,12 +627,58 @@
                         </div>
 
 
-                        <!-- MESSAGE -->
+                        <div class="switch-row">
+
+                            <label for="showName">
+                                👤 Show owner/name
+                            </label>
+
+                            <input
+                                id="showName"
+                                class="checkbox"
+                                type="checkbox"
+                                checked
+                            >
+
+                        </div>
+
+
+                        <div class="control-group">
+
+                            <label for="extraTextInput">
+                                Second small-text field
+                            </label>
+
+                            <input
+                                id="extraTextInput"
+                                type="text"
+                                placeholder="Property of... / tagline"
+                                maxlength="80"
+                            >
+
+                        </div>
+
+
+                        <div class="switch-row">
+
+                            <label for="showExtra">
+                                👁️ Show second text
+                            </label>
+
+                            <input
+                                id="showExtra"
+                                class="checkbox"
+                                type="checkbox"
+                                checked
+                            >
+
+                        </div>
+
 
                         <div class="control-group">
 
                             <label for="messageInput">
-                                Message
+                                Main message
                             </label>
 
                             <textarea
@@ -565,7 +691,223 @@
                         </div>
 
 
-                        <!-- BACKGROUND -->
+                        <div class="switch-row">
+
+                            <label for="showMessage">
+                                👁️ Show main message
+                            </label>
+
+                            <input
+                                id="showMessage"
+                                class="checkbox"
+                                type="checkbox"
+                                checked
+                            >
+
+                        </div>
+
+
+                        <!-- QR -->
+
+                        <h3 class="section-title">
+                            📱 QR Code
+                        </h3>
+
+
+                        <div class="switch-row">
+
+                            <label for="showQR">
+                                Show QR code
+                            </label>
+
+                            <input
+                                id="showQR"
+                                class="checkbox"
+                                type="checkbox"
+                                checked
+                            >
+
+                        </div>
+
+
+                        <div class="control-group">
+
+                            <label for="qrSize">
+                                QR size
+                            </label>
+
+                            <input
+                                id="qrSize"
+                                type="range"
+                                min="50"
+                                max="250"
+                                value="100"
+                            >
+
+                            <span
+                                id="qrSizeValue"
+                                class="small-note"
+                            >
+                                100 px
+                            </span>
+
+                        </div>
+
+
+                        <!-- CODE -->
+
+                        <h3 class="section-title">
+                            🔢 Card Code
+                        </h3>
+
+
+                        <div class="switch-row">
+
+                            <label for="showCode">
+                                Show card code
+                            </label>
+
+                            <input
+                                id="showCode"
+                                class="checkbox"
+                                type="checkbox"
+                                checked
+                            >
+
+                        </div>
+
+
+                        <!-- ACCESS -->
+
+                        <h3 class="section-title">
+                            🔐 Access
+                        </h3>
+
+
+                        <div class="switch-row">
+
+                            <label for="showAuthorized">
+                                Authorized users only
+                            </label>
+
+                            <input
+                                id="showAuthorized"
+                                class="checkbox"
+                                type="checkbox"
+                            >
+
+                        </div>
+
+
+                        <!-- TEXT SIZES -->
+
+                        <h3 class="section-title">
+                            🔤 Text Sizes
+                        </h3>
+
+
+                        <div class="control-group">
+
+                            <label for="titleSize">
+                                Title
+                            </label>
+
+                            <input
+                                id="titleSize"
+                                type="range"
+                                min="14"
+                                max="70"
+                                value="32"
+                            >
+
+                            <span
+                                id="titleSizeValue"
+                                class="small-note"
+                            >
+                                32 px
+                            </span>
+
+                        </div>
+
+
+                        <div class="control-group">
+
+                            <label for="smallSize">
+                                Small text
+                            </label>
+
+                            <input
+                                id="smallSize"
+                                type="range"
+                                min="8"
+                                max="30"
+                                value="14"
+                            >
+
+                            <span
+                                id="smallSizeValue"
+                                class="small-note"
+                            >
+                                14 px
+                            </span>
+
+                        </div>
+
+
+                        <div class="control-group">
+
+                            <label for="messageSize">
+                                Main message
+                            </label>
+
+                            <input
+                                id="messageSize"
+                                type="range"
+                                min="10"
+                                max="60"
+                                value="24"
+                            >
+
+                            <span
+                                id="messageSizeValue"
+                                class="small-note"
+                            >
+                                24 px
+                            </span>
+
+                        </div>
+
+
+                        <div class="control-group">
+
+                            <label for="codeSize">
+                                Card code
+                            </label>
+
+                            <input
+                                id="codeSize"
+                                type="range"
+                                min="7"
+                                max="30"
+                                value="12"
+                            >
+
+                            <span
+                                id="codeSizeValue"
+                                class="small-note"
+                            >
+                                12 px
+                            </span>
+
+                        </div>
+
+
+                        <!-- APPEARANCE -->
+
+                        <h3 class="section-title">
+                            🖼️ Appearance
+                        </h3>
+
 
                         <div class="control-group">
 
@@ -582,8 +924,6 @@
                         </div>
 
 
-                        <!-- ACCENT -->
-
                         <div class="control-group">
 
                             <label for="accentInput">
@@ -599,42 +939,77 @@
                         </div>
 
 
-                        <!-- TEXT SIZE -->
-
                         <div class="control-group">
 
-                            <label for="textSize">
-                                Text size
+                            <label for="borderWidth">
+                                Border width
                             </label>
 
                             <input
-                                id="textSize"
+                                id="borderWidth"
                                 type="range"
-                                min="14"
-                                max="40"
-                                value="24"
+                                min="0"
+                                max="20"
+                                value="0"
                             >
 
                             <span
-                                id="textSizeValue"
-                                class="preview-size"
+                                id="borderWidthValue"
+                                class="small-note"
                             >
-                                24px
+                                0 px
                             </span>
 
                         </div>
 
 
-                        <!-- QR -->
+                        <div class="control-group">
 
-                        <div class="switch-row">
-
-                            <label for="showQR">
-                                📱 Show QR code
+                            <label for="borderColor">
+                                Border color
                             </label>
 
                             <input
-                                id="showQR"
+                                id="borderColor"
+                                type="color"
+                                value="#ffffff"
+                            >
+
+                        </div>
+
+
+                        <div class="control-group">
+
+                            <label for="borderRadius">
+                                Border radius
+                            </label>
+
+                            <input
+                                id="borderRadius"
+                                type="range"
+                                min="0"
+                                max="100"
+                                value="28"
+                            >
+
+                            <span
+                                id="borderRadiusValue"
+                                class="small-note"
+                            >
+                                28 px
+                            </span>
+
+                        </div>
+
+
+                        <div class="switch-row">
+
+                            <label for="showShadow">
+                                ✨ Shadow
+                            </label>
+
+                            <input
+                                id="showShadow"
                                 class="checkbox"
                                 type="checkbox"
                                 checked
@@ -643,21 +1018,49 @@
                         </div>
 
 
-                        <!-- CODE -->
+                        <!-- LAYOUT -->
 
-                        <div class="switch-row">
+                        <h3 class="section-title">
+                            🪪 Layout
+                        </h3>
 
-                            <label for="showCode">
-                                🔢 Show card code
-                            </label>
 
-                            <input
-                                id="showCode"
-                                class="checkbox"
-                                type="checkbox"
-                                checked
-                            >
+                        <select id="layoutSelect">
 
+                            <option value="standard">
+                                Standard
+                            </option>
+
+                            <option value="qr">
+                                QR-focused
+                            </option>
+
+                            <option value="id">
+                                ID-style
+                            </option>
+
+                            <option value="minimal">
+                                Minimal
+                            </option>
+
+                        </select>
+
+
+                        <!-- RESET -->
+
+                        <button
+                            id="resetPositions"
+                            type="button"
+                            class="secondary"
+                        >
+                            ↩️ Reset Positions
+                        </button>
+
+
+                        <div class="drag-help">
+                            💡 Drag the title, name, second text,
+                            message, QR code, card code, or access
+                            badge directly on the preview.
                         </div>
 
 
@@ -674,57 +1077,96 @@
                 </div>
 
 
+                <!-- ========================= -->
                 <!-- PREVIEW -->
+                <!-- ========================= -->
 
                 <div>
 
                     <div class="preview-area">
 
                         <div
-                            id="printCard"
-                            class="physical-card"
+                            id="cardStage"
+                            class="card-stage"
                         >
 
-                            <div class="card-top">
+                            <div
+                                id="printCard"
+                                class="physical-card"
+                            >
 
-                                <div>
 
-                                    <h2
-                                        id="previewTitle"
-                                        class="card-title"
-                                    >
-                                        Card Message
-                                    </h2>
+                                <!-- TITLE -->
 
-                                    <div
-                                        id="previewName"
-                                        class="card-name"
-                                    ></div>
-
+                                <div
+                                    id="previewTitle"
+                                    class="drag-item drag-title"
+                                    data-element="title"
+                                >
+                                    Card Message
                                 </div>
 
-                            </div>
+
+                                <!-- NAME -->
+
+                                <div
+                                    id="previewName"
+                                    class="drag-item drag-name"
+                                    data-element="name"
+                                ></div>
 
 
-                            <div
-                                id="previewMessage"
-                                class="card-message"
-                            >
-                                Your message...
-                            </div>
+                                <!-- EXTRA -->
+
+                                <div
+                                    id="previewExtra"
+                                    class="drag-item drag-extra"
+                                    data-element="extra"
+                                ></div>
 
 
-                            <div
-                                id="qrContainer"
-                                class="card-qr"
-                            ></div>
+                                <!-- MESSAGE -->
+
+                                <div
+                                    id="previewMessage"
+                                    class="drag-item drag-message"
+                                    data-element="message"
+                                >
+                                    Your message...
+                                </div>
 
 
-                            <div
-                                id="previewCode"
-                                class="card-code-display"
-                            >
-                                Loading...
+                                <!-- QR -->
+
+                                <div
+                                    id="qrContainer"
+                                    class="drag-item drag-qr"
+                                    data-element="qr"
+                                ></div>
+
+
+                                <!-- CODE -->
+
+                                <div
+                                    id="previewCode"
+                                    class="drag-item drag-code"
+                                    data-element="code"
+                                >
+                                    Loading...
+                                </div>
+
+
+                                <!-- BADGE -->
+
+                                <div
+                                    id="authorizedBadge"
+                                    class="drag-item drag-badge"
+                                    data-element="badge"
+                                >
+                                    🔐 Authorized users only
+                                </div>
+
+
                             </div>
 
                         </div>
@@ -767,6 +1209,12 @@
 
     <script>
 
+        /*
+         * =========================
+         * URL / CARD
+         * =========================
+         */
+
         const params =
             new URLSearchParams(
                 window.location.search
@@ -777,6 +1225,12 @@
             params.get("id");
 
 
+        /*
+         * =========================
+         * ELEMENTS
+         * =========================
+         */
+
         const status =
             document.getElementById(
                 "status"
@@ -786,6 +1240,42 @@
         const printCard =
             document.getElementById(
                 "printCard"
+            );
+
+
+        const cardStage =
+            document.getElementById(
+                "cardStage"
+            );
+
+
+        const widthSlider =
+            document.getElementById(
+                "widthSlider"
+            );
+
+
+        const heightSlider =
+            document.getElementById(
+                "heightSlider"
+            );
+
+
+        const widthValue =
+            document.getElementById(
+                "widthValue"
+            );
+
+
+        const heightValue =
+            document.getElementById(
+                "heightValue"
+            );
+
+
+        const lockRatio =
+            document.getElementById(
+                "lockRatio"
             );
 
 
@@ -801,33 +1291,39 @@
             );
 
 
+        const extraTextInput =
+            document.getElementById(
+                "extraTextInput"
+            );
+
+
         const messageInput =
             document.getElementById(
                 "messageInput"
             );
 
 
-        const backgroundInput =
+        const showTitle =
             document.getElementById(
-                "backgroundInput"
+                "showTitle"
             );
 
 
-        const accentInput =
+        const showName =
             document.getElementById(
-                "accentInput"
+                "showName"
             );
 
 
-        const textSize =
+        const showExtra =
             document.getElementById(
-                "textSize"
+                "showExtra"
             );
 
 
-        const textSizeValue =
+        const showMessage =
             document.getElementById(
-                "textSizeValue"
+                "showMessage"
             );
 
 
@@ -843,33 +1339,81 @@
             );
 
 
-        const cardWidth =
+        const showAuthorized =
             document.getElementById(
-                "cardWidth"
+                "showAuthorized"
             );
 
 
-        const cardHeight =
+        const qrSize =
             document.getElementById(
-                "cardHeight"
+                "qrSize"
             );
 
 
-        const lockRatio =
+        const titleSize =
             document.getElementById(
-                "lockRatio"
+                "titleSize"
             );
 
 
-        const dimensionValue =
+        const smallSize =
             document.getElementById(
-                "dimensionValue"
+                "smallSize"
             );
 
 
-        const previewDimensions =
+        const messageSize =
             document.getElementById(
-                "previewDimensions"
+                "messageSize"
+            );
+
+
+        const codeSize =
+            document.getElementById(
+                "codeSize"
+            );
+
+
+        const backgroundInput =
+            document.getElementById(
+                "backgroundInput"
+            );
+
+
+        const accentInput =
+            document.getElementById(
+                "accentInput"
+            );
+
+
+        const borderWidth =
+            document.getElementById(
+                "borderWidth"
+            );
+
+
+        const borderColor =
+            document.getElementById(
+                "borderColor"
+            );
+
+
+        const borderRadius =
+            document.getElementById(
+                "borderRadius"
+            );
+
+
+        const showShadow =
+            document.getElementById(
+                "showShadow"
+            );
+
+
+        const layoutSelect =
+            document.getElementById(
+                "layoutSelect"
             );
 
 
@@ -882,6 +1426,12 @@
         const previewName =
             document.getElementById(
                 "previewName"
+            );
+
+
+        const previewExtra =
+            document.getElementById(
+                "previewExtra"
             );
 
 
@@ -903,105 +1453,156 @@
             );
 
 
+        const authorizedBadge =
+            document.getElementById(
+                "authorizedBadge"
+            );
+
+
+        /*
+         * =========================
+         * STATE
+         * =========================
+         */
+
         let cardCode = "";
 
 
-        let lockedRatio =
+        let ratio =
             600 / 380;
 
 
+        let positions = {
 
-        function updateDimensions(
+            title: {
+                x: 34,
+                y: 28
+            },
+
+            name: {
+                x: 34,
+                y: 75
+            },
+
+            extra: {
+                x: 34,
+                y: 100
+            },
+
+            message: {
+                x: 34,
+                y: 145
+            },
+
+            qr: {
+                x: 470,
+                y: 225
+            },
+
+            code: {
+                x: 34,
+                y: 340
+            },
+
+            badge: {
+                x: 390,
+                y: 25
+            }
+
+        };
+
+
+        /*
+         * =========================
+         * POSITION LIMITS
+         * =========================
+         */
+
+        function clamp(
+            value,
+            min,
+            max
+        ) {
+
+            return Math.max(
+                min,
+                Math.min(
+                    max,
+                    value
+                )
+            );
+
+        }
+
+
+        /*
+         * =========================
+         * APPLY CARD SIZE
+         * =========================
+         */
+
+        function updateCardSize(
             changed
         ) {
 
             let width =
-                parseInt(
-                    cardWidth.value,
-                    10
+                Number(
+                    widthSlider.value
                 );
 
 
             let height =
-                parseInt(
-                    cardHeight.value,
-                    10
+                Number(
+                    heightSlider.value
                 );
 
 
             if (
-                !Number.isFinite(width) ||
-                width < 80
+                lockRatio.checked &&
+                changed === "width"
             ) {
 
-                width = 80;
-
-                cardWidth.value =
-                    width;
-
-            }
+                height =
+                    Math.round(
+                        width / ratio
+                    );
 
 
-            if (
-                !Number.isFinite(height) ||
-                height < 50
-            ) {
+                height =
+                    clamp(
+                        height,
+                        120,
+                        1000
+                    );
 
-                height = 50;
 
-                cardHeight.value =
+                heightSlider.value =
                     height;
 
             }
 
 
             if (
-                lockRatio.checked
+                lockRatio.checked &&
+                changed === "height"
             ) {
 
-                if (
-                    changed === "width"
-                ) {
+                width =
+                    Math.round(
+                        height * ratio
+                    );
 
-                    height =
-                        Math.round(
-                            width /
-                            lockedRatio
-                        );
 
-                    height =
-                        Math.max(
-                            50,
-                            Math.min(
-                                3000,
-                                height
-                            )
-                        );
+                width =
+                    clamp(
+                        width,
+                        200,
+                        1500
+                    );
 
-                    cardHeight.value =
-                        height;
 
-                } else {
-
-                    width =
-                        Math.round(
-                            height *
-                            lockedRatio
-                        );
-
-                    width =
-                        Math.max(
-                            80,
-                            Math.min(
-                                3000,
-                                width
-                            )
-                        );
-
-                    cardWidth.value =
-                        width;
-
-                }
+                widthSlider.value =
+                    width;
 
             }
 
@@ -1014,18 +1615,302 @@
                 height + "px";
 
 
-            dimensionValue.textContent =
-                `${width} × ${height} px`;
+            cardStage.style.width =
+                width + "px";
 
 
-            previewDimensions.textContent =
+            cardStage.style.height =
+                height + "px";
+
+
+            widthValue.textContent =
+                width + " px";
+
+
+            heightValue.textContent =
+                height + " px";
+
+
+            document.getElementById(
+                "previewDimensions"
+            ).textContent =
                 `Live print preview — ${width} × ${height} px`;
+
+
+            /*
+             * Keep positions inside
+             * the resized card.
+             */
+
+            Object.keys(
+                positions
+            ).forEach(
+                key => {
+
+                    positions[key].x =
+                        clamp(
+                            positions[key].x,
+                            0,
+                            width - 20
+                        );
+
+
+                    positions[key].y =
+                        clamp(
+                            positions[key].y,
+                            0,
+                            height - 20
+                        );
+
+                }
+            );
+
+
+            renderPositions();
 
         }
 
 
 
+        /*
+         * =========================
+         * RENDER POSITIONS
+         * =========================
+         */
+
+        function renderPositions() {
+
+            Object.keys(
+                positions
+            ).forEach(
+                key => {
+
+                    const element =
+                        document.querySelector(
+                            `[data-element="${key}"]`
+                        );
+
+
+                    if (!element) {
+                        return;
+                    }
+
+
+                    const position =
+                        positions[key];
+
+
+                    element.style.left =
+                        position.x + "px";
+
+
+                    element.style.top =
+                        position.y + "px";
+
+                }
+            );
+
+        }
+
+
+
+        /*
+         * =========================
+         * DRAGGING
+         * =========================
+         */
+
+        function makeDraggable(
+            element
+        ) {
+
+            let dragging =
+                false;
+
+
+            let startPointerX =
+                0;
+
+
+            let startPointerY =
+                0;
+
+
+            let startX =
+                0;
+
+
+            let startY =
+                0;
+
+
+            element.addEventListener(
+                "pointerdown",
+                event => {
+
+                    if (
+                        event.button !== 0 &&
+                        event.pointerType !== "touch"
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    dragging =
+                        true;
+
+
+                    element.classList.add(
+                        "dragging"
+                    );
+
+
+                    element.setPointerCapture(
+                        event.pointerId
+                    );
+
+
+                    startPointerX =
+                        event.clientX;
+
+
+                    startPointerY =
+                        event.clientY;
+
+
+                    const key =
+                        element.dataset.element;
+
+
+                    startX =
+                        positions[key].x;
+
+
+                    startY =
+                        positions[key].y;
+
+
+                    event.preventDefault();
+
+                }
+            );
+
+
+            element.addEventListener(
+                "pointermove",
+                event => {
+
+                    if (!dragging) {
+                        return;
+                    }
+
+
+                    const key =
+                        element.dataset.element;
+
+
+                    const scaleX =
+                        printCard.offsetWidth /
+                        printCard.getBoundingClientRect().width;
+
+
+                    const scaleY =
+                        printCard.offsetHeight /
+                        printCard.getBoundingClientRect().height;
+
+
+                    const dx =
+                        (
+                            event.clientX -
+                            startPointerX
+                        ) *
+                        scaleX;
+
+
+                    const dy =
+                        (
+                            event.clientY -
+                            startPointerY
+                        ) *
+                        scaleY;
+
+
+                    positions[key].x =
+                        clamp(
+                            startX + dx,
+                            0,
+                            printCard.offsetWidth -
+                                Math.min(
+                                    element.offsetWidth,
+                                    50
+                                )
+                        );
+
+
+                    positions[key].y =
+                        clamp(
+                            startY + dy,
+                            0,
+                            printCard.offsetHeight -
+                                Math.min(
+                                    element.offsetHeight,
+                                    30
+                                )
+                        );
+
+
+                    renderPositions();
+
+                }
+            );
+
+
+            function stopDragging() {
+
+                if (!dragging) {
+                    return;
+                }
+
+
+                dragging =
+                    false;
+
+
+                element.classList.remove(
+                    "dragging"
+                );
+
+            }
+
+
+            element.addEventListener(
+                "pointerup",
+                stopDragging
+            );
+
+
+            element.addEventListener(
+                "pointercancel",
+                stopDragging
+            );
+
+        }
+
+
+
+        /*
+         * =========================
+         * PREVIEW
+         * =========================
+         */
+
         function updatePreview() {
+
+            /*
+             * Text
+             */
 
             previewTitle.textContent =
                 titleInput.value ||
@@ -1036,10 +1921,65 @@
                 nameInput.value;
 
 
+            previewExtra.textContent =
+                extraTextInput.value;
+
+
             previewMessage.textContent =
                 messageInput.value ||
                 "Your message...";
 
+
+            /*
+             * Visibility
+             */
+
+            previewTitle.style.display =
+                showTitle.checked
+                    ? "block"
+                    : "none";
+
+
+            previewName.style.display =
+                showName.checked
+                    ? "block"
+                    : "none";
+
+
+            previewExtra.style.display =
+                showExtra.checked &&
+                extraTextInput.value.trim()
+                    ? "block"
+                    : "none";
+
+
+            previewMessage.style.display =
+                showMessage.checked
+                    ? "block"
+                    : "none";
+
+
+            qrContainer.style.display =
+                showQR.checked
+                    ? "flex"
+                    : "none";
+
+
+            previewCode.style.display =
+                showCode.checked
+                    ? "block"
+                    : "none";
+
+
+            authorizedBadge.style.display =
+                showAuthorized.checked
+                    ? "block"
+                    : "none";
+
+
+            /*
+             * Colors
+             */
 
             printCard.style.background =
                 backgroundInput.value;
@@ -1051,35 +1991,193 @@
             );
 
 
+            /*
+             * Text sizes
+             */
+
+            previewTitle.style.fontSize =
+                titleSize.value + "px";
+
+
+            previewName.style.fontSize =
+                smallSize.value + "px";
+
+
+            previewExtra.style.fontSize =
+                smallSize.value + "px";
+
+
             previewMessage.style.fontSize =
-                textSize.value + "px";
+                messageSize.value + "px";
 
 
-            textSizeValue.textContent =
-                textSize.value + "px";
+            previewCode.style.fontSize =
+                codeSize.value + "px";
 
 
-            qrContainer.style.display =
-                showQR.checked
-                    ? "block"
+            document.getElementById(
+                "titleSizeValue"
+            ).textContent =
+                titleSize.value + " px";
+
+
+            document.getElementById(
+                "smallSizeValue"
+            ).textContent =
+                smallSize.value + " px";
+
+
+            document.getElementById(
+                "messageSizeValue"
+            ).textContent =
+                messageSize.value + " px";
+
+
+            document.getElementById(
+                "codeSizeValue"
+            ).textContent =
+                codeSize.value + " px";
+
+
+            /*
+             * QR
+             */
+
+            const qrPixels =
+                Number(
+                    qrSize.value
+                );
+
+
+            qrContainer.style.width =
+                qrPixels + "px";
+
+
+            qrContainer.style.height =
+                qrPixels + "px";
+
+
+            document.getElementById(
+                "qrSizeValue"
+            ).textContent =
+                qrPixels + " px";
+
+
+            /*
+             * Border
+             */
+
+            const border =
+                Number(
+                    borderWidth.value
+                );
+
+
+            printCard.style.borderWidth =
+                border + "px";
+
+
+            printCard.style.borderStyle =
+                border > 0
+                    ? "solid"
                     : "none";
 
 
-            previewCode.style.display =
-                showCode.checked
-                    ? "block"
+            printCard.style.borderColor =
+                borderColor.value;
+
+
+            printCard.style.borderRadius =
+                borderRadius.value + "px";
+
+
+            document.getElementById(
+                "borderWidthValue"
+            ).textContent =
+                border + " px";
+
+
+            document.getElementById(
+                "borderRadiusValue"
+            ).textContent =
+                borderRadius.value + " px";
+
+
+            /*
+             * Shadow
+             */
+
+            printCard.style.boxShadow =
+                showShadow.checked
+                    ? "0 25px 60px rgba(0,0,0,.45)"
                     : "none";
 
 
-            updateDimensions();
+            /*
+             * Layout
+             */
+
+            if (
+                layoutSelect.value ===
+                "qr"
+            ) {
+
+                previewMessage.style.maxWidth =
+                    "220px";
+
+            }
+
+
+            else if (
+                layoutSelect.value ===
+                "id"
+            ) {
+
+                previewMessage.style.maxWidth =
+                    "260px";
+
+            }
+
+
+            else if (
+                layoutSelect.value ===
+                "minimal"
+            ) {
+
+                previewMessage.style.maxWidth =
+                    "500px";
+
+            }
+
+
+            else {
+
+                previewMessage.style.maxWidth =
+                    "280px";
+
+            }
+
+
+            /*
+             * Size
+             */
+
+            updateCardSize();
 
         }
 
 
 
+        /*
+         * =========================
+         * QR CODE
+         * =========================
+         */
+
         function createQR() {
 
-            qrContainer.innerHTML = "";
+            qrContainer.innerHTML =
+                "";
 
 
             if (!cardCode) {
@@ -1100,8 +2198,11 @@
                 qrContainer,
                 {
                     text: qrUrl,
+
                     width: 100,
+
                     height: 100,
+
                     correctLevel:
                         QRCode.CorrectLevel.M
                 }
@@ -1110,6 +2211,257 @@
         }
 
 
+
+        /*
+         * =========================
+         * RESET POSITIONS
+         * =========================
+         */
+
+        document
+            .getElementById(
+                "resetPositions"
+            )
+            .addEventListener(
+                "click",
+                () => {
+
+                    positions = {
+
+                        title: {
+                            x: 34,
+                            y: 28
+                        },
+
+                        name: {
+                            x: 34,
+                            y: 75
+                        },
+
+                        extra: {
+                            x: 34,
+                            y: 100
+                        },
+
+                        message: {
+                            x: 34,
+                            y: 145
+                        },
+
+                        qr: {
+                            x:
+                                Number(
+                                    widthSlider.value
+                                ) - 130,
+
+                            y:
+                                Number(
+                                    heightSlider.value
+                                ) - 155
+                        },
+
+                        code: {
+                            x: 34,
+
+                            y:
+                                Number(
+                                    heightSlider.value
+                                ) - 40
+                        },
+
+                        badge: {
+                            x:
+                                Number(
+                                    widthSlider.value
+                                ) - 210,
+
+                            y: 25
+                        }
+
+                    };
+
+
+                    renderPositions();
+
+                }
+            );
+
+
+
+        /*
+         * =========================
+         * SIZE EVENTS
+         * =========================
+         */
+
+        widthSlider.addEventListener(
+            "input",
+            () => {
+
+                updateCardSize(
+                    "width"
+                );
+
+            }
+        );
+
+
+        heightSlider.addEventListener(
+            "input",
+            () => {
+
+                updateCardSize(
+                    "height"
+                );
+
+            }
+        );
+
+
+        lockRatio.addEventListener(
+            "change",
+            () => {
+
+                if (
+                    lockRatio.checked
+                ) {
+
+                    ratio =
+                        Number(
+                            widthSlider.value
+                        ) /
+                        Number(
+                            heightSlider.value
+                        );
+
+                }
+
+            }
+        );
+
+
+
+        /*
+         * =========================
+         * PRESETS
+         * =========================
+         */
+
+        document
+            .querySelectorAll(
+                "[data-width]"
+            )
+            .forEach(
+                button => {
+
+                    button.addEventListener(
+                        "click",
+                        () => {
+
+                            const width =
+                                Number(
+                                    button.dataset.width
+                                );
+
+
+                            const height =
+                                Number(
+                                    button.dataset.height
+                                );
+
+
+                            widthSlider.value =
+                                width;
+
+
+                            heightSlider.value =
+                                height;
+
+
+                            ratio =
+                                width /
+                                height;
+
+
+                            updatePreview();
+
+                        }
+                    );
+
+                }
+            );
+
+
+
+        /*
+         * =========================
+         * NORMAL CONTROLS
+         * =========================
+         */
+
+        [
+
+            titleInput,
+            nameInput,
+            extraTextInput,
+            messageInput,
+            showTitle,
+            showName,
+            showExtra,
+            showMessage,
+            showQR,
+            showCode,
+            showAuthorized,
+            qrSize,
+            titleSize,
+            smallSize,
+            messageSize,
+            codeSize,
+            backgroundInput,
+            accentInput,
+            borderWidth,
+            borderColor,
+            borderRadius,
+            showShadow,
+            layoutSelect
+
+        ].forEach(
+            element => {
+
+                element.addEventListener(
+                    element.type === "checkbox" ||
+                    element.tagName === "SELECT"
+                        ? "change"
+                        : "input",
+                    updatePreview
+                );
+
+            }
+        );
+
+
+
+        /*
+         * =========================
+         * MAKE ELEMENTS DRAGGABLE
+         * =========================
+         */
+
+        document
+            .querySelectorAll(
+                ".drag-item"
+            )
+            .forEach(
+                makeDraggable
+            );
+
+
+
+        /*
+         * =========================
+         * LOAD CARD
+         * =========================
+         */
 
         async function loadCard() {
 
@@ -1127,7 +2479,9 @@
 
 
             const {
-                data: { user }
+                data: {
+                    user
+                }
             } =
                 await supabaseClient
                     .auth
@@ -1214,6 +2568,70 @@
 
             createQR();
 
+
+            /*
+             * Load existing card data
+             */
+
+            const {
+                data: cardData
+            } =
+                await supabaseClient
+                    .from("card_data")
+                    .select(
+                        "data"
+                    )
+                    .eq(
+                        "card_id",
+                        cardId
+                    )
+                    .maybeSingle();
+
+
+            if (
+                cardData &&
+                cardData.data
+            ) {
+
+                const data =
+                    cardData.data;
+
+
+                if (
+                    typeof data.text ===
+                    "string"
+                ) {
+
+                    messageInput.value =
+                        data.text;
+
+                }
+
+
+                if (
+                    typeof data.name ===
+                    "string"
+                ) {
+
+                    nameInput.value =
+                        data.name;
+
+                }
+
+
+                if (
+                    typeof data.title ===
+                    "string"
+                ) {
+
+                    titleInput.value =
+                        data.title;
+
+                }
+
+            }
+
+
             updatePreview();
 
 
@@ -1228,156 +2646,15 @@
 
 
         /*
-         * DIMENSION CONTROLS
+         * =========================
+         * PRINT
+         * =========================
          */
 
-        cardWidth.addEventListener(
-            "input",
-            () => {
-
-                updateDimensions(
-                    "width"
-                );
-
-            }
-        );
-
-
-        cardHeight.addEventListener(
-            "input",
-            () => {
-
-                updateDimensions(
-                    "height"
-                );
-
-            }
-        );
-
-
-        lockRatio.addEventListener(
-            "change",
-            () => {
-
-                if (
-                    lockRatio.checked
-                ) {
-
-                    lockedRatio =
-                        parseInt(
-                            cardWidth.value,
-                            10
-                        ) /
-                        parseInt(
-                            cardHeight.value,
-                            10
-                        );
-
-                }
-
-            }
-        );
-
-
         document
-            .querySelectorAll(
-                ".size-preset"
+            .getElementById(
+                "printButton"
             )
-            .forEach(
-                button => {
-
-                    button.addEventListener(
-                        "click",
-                        () => {
-
-                            const width =
-                                parseInt(
-                                    button.dataset.width,
-                                    10
-                                );
-
-                            const height =
-                                parseInt(
-                                    button.dataset.height,
-                                    10
-                                );
-
-
-                            cardWidth.value =
-                                width;
-
-                            cardHeight.value =
-                                height;
-
-
-                            lockedRatio =
-                                width /
-                                height;
-
-
-                            updateDimensions();
-
-                        }
-                    );
-
-                }
-            );
-
-
-        /*
-         * LIVE PREVIEW CONTROLS
-         */
-
-        titleInput.addEventListener(
-            "input",
-            updatePreview
-        );
-
-
-        nameInput.addEventListener(
-            "input",
-            updatePreview
-        );
-
-
-        messageInput.addEventListener(
-            "input",
-            updatePreview
-        );
-
-
-        backgroundInput.addEventListener(
-            "input",
-            updatePreview
-        );
-
-
-        accentInput.addEventListener(
-            "input",
-            updatePreview
-        );
-
-
-        textSize.addEventListener(
-            "input",
-            updatePreview
-        );
-
-
-        showQR.addEventListener(
-            "change",
-            updatePreview
-        );
-
-
-        showCode.addEventListener(
-            "change",
-            updatePreview
-        );
-
-
-        document
-            .getElementById("printButton")
             .addEventListener(
                 "click",
                 () => {
@@ -1387,6 +2664,12 @@
                 }
             );
 
+
+        /*
+         * =========================
+         * START
+         * =========================
+         */
 
         loadCard();
 
