@@ -9,47 +9,56 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Public Card — Card Message System</title>
+    <title>Card — Card Message System</title>
 
     <link rel="stylesheet" href="style.css">
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
+
 <body>
 
     <nav>
+
         <strong>🪪 Card Message System</strong>
 
         <div class="nav-links">
+
             <a
                 class="button secondary"
                 href="index.html"
             >
                 Home
             </a>
+
         </div>
+
     </nav>
 
 
     <main>
 
+        <!-- NORMAL CARD VIEW -->
+
         <section
+            id="cardPanel"
             class="panel"
             style="max-width:700px;margin:40px auto;"
         >
 
-            <h1>Card Information</h1>
+            <h1>🪪 Card</h1>
 
             <p>
-                Card:
-                <span
-                    id="cardCode"
-                    class="card-code"
-                >
-                    Loading...
-                </span>
+                Card code:
             </p>
+
+            <span
+                id="cardCode"
+                class="card-code"
+            >
+                Loading...
+            </span>
 
 
             <div
@@ -62,6 +71,7 @@
 
 
             <div
+                id="cardActions"
                 class="row"
                 style="margin-top:24px;"
             >
@@ -89,6 +99,73 @@
 
         </section>
 
+
+        <!-- ACCESS DENIED -->
+
+        <section
+            id="deniedPanel"
+            class="panel center"
+            style="
+                max-width:600px;
+                margin:60px auto;
+                display:none;
+            "
+        >
+
+            <h1>🔒 Access Denied</h1>
+
+            <p>
+                You are not authorized to view this card.
+            </p>
+
+            <p>
+                Ask the card owner to add your account
+                as an authorized user.
+            </p>
+
+
+            <div
+                class="cms-card"
+                style="margin-top:24px;"
+            >
+
+                <p>
+                    Card code:
+                </p>
+
+                <span
+                    id="deniedCode"
+                    class="card-code"
+                >
+                    Unknown
+                </span>
+
+            </div>
+
+
+            <div
+                class="row"
+                style="margin-top:24px;"
+            >
+
+                <a
+                    class="button"
+                    href="auth.html"
+                >
+                    👤 Log In
+                </a>
+
+                <a
+                    class="button secondary"
+                    href="scan.html"
+                >
+                    📷 Scan Another Card
+                </a>
+
+            </div>
+
+        </section>
+
     </main>
 
 
@@ -103,8 +180,21 @@
                 window.location.search
             );
 
+
         const code =
             params.get("code");
+
+
+        const cardPanel =
+            document.getElementById(
+                "cardPanel"
+            );
+
+
+        const deniedPanel =
+            document.getElementById(
+                "deniedPanel"
+            );
 
 
         const cardCode =
@@ -112,15 +202,24 @@
                 "cardCode"
             );
 
+
+        const deniedCode =
+            document.getElementById(
+                "deniedCode"
+            );
+
+
         const cardData =
             document.getElementById(
                 "cardData"
             );
 
+
         const status =
             document.getElementById(
                 "status"
             );
+
 
         const exportButton =
             document.getElementById(
@@ -132,23 +231,29 @@
 
 
 
+        function showDenied() {
+
+            cardPanel.style.display =
+                "none";
+
+            deniedPanel.style.display =
+                "block";
+
+            deniedCode.textContent =
+                code || "Unknown";
+
+        }
+
+
+
         async function loadCard() {
 
             if (!code) {
 
-                cardCode.textContent =
-                    "Unknown";
-
-                cardData.textContent =
-                    "No card code was provided.";
-
-                status.textContent =
-                    "Card code missing.";
-
-                status.className =
-                    "status error";
+                showDenied();
 
                 return;
+
             }
 
 
@@ -171,47 +276,45 @@
 
             if (error) {
 
-                cardData.textContent =
-                    "Could not load card.";
+                console.error(error);
 
-                status.textContent =
-                    error.message;
 
-                status.className =
-                    "status error";
+                showDenied();
 
                 return;
+
             }
 
+
+            /*
+             * The database returns null when
+             * the user isn't authorized.
+             */
 
             if (!data) {
 
-                cardData.textContent =
-                    "Card not found.";
-
-                status.textContent =
-                    "This card does not exist.";
-
-                status.className =
-                    "status error";
+                showDenied();
 
                 return;
+
             }
 
 
-            publicData = data;
+            publicData =
+                data;
 
 
             const actualData =
                 data.data || {};
 
 
-            cardData.innerHTML = "";
+            cardData.innerHTML =
+                "";
 
 
             if (
                 typeof actualData.text ===
-                "string" &&
+                    "string" &&
                 actualData.text.trim() !== ""
             ) {
 
@@ -220,8 +323,10 @@
                         "h2"
                     );
 
+
                 title.textContent =
                     "💬 Message";
+
 
                 cardData.appendChild(
                     title
@@ -233,14 +338,18 @@
                         "p"
                     );
 
+
                 text.textContent =
                     actualData.text;
+
 
                 text.style.whiteSpace =
                     "pre-wrap";
 
+
                 text.style.fontSize =
                     "1.15rem";
+
 
                 cardData.appendChild(
                     text
@@ -253,8 +362,10 @@
                         "p"
                     );
 
+
                 empty.textContent =
-                    "This card doesn't have any public data yet.";
+                    "This card doesn't have any data yet.";
+
 
                 cardData.appendChild(
                     empty
@@ -310,13 +421,23 @@
                     );
 
 
-                link.href = url;
+                link.href =
+                    url;
+
 
                 link.download =
                     `card-${code}.json`;
 
 
+                document.body.appendChild(
+                    link
+                );
+
+
                 link.click();
+
+
+                link.remove();
 
 
                 URL.revokeObjectURL(
