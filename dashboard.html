@@ -12,9 +12,110 @@
 
     <title>Card Message System — Dashboard</title>
 
-    <link rel="stylesheet" href="style.css">
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    ></script>
+
+    <style>
+
+        .dashboard-card {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .card-preview {
+            padding: 16px;
+
+            border-radius: 12px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #1d2230,
+                    #151922
+                );
+
+            border: 1px solid var(--border);
+
+            min-height: 120px;
+
+            overflow: hidden;
+        }
+
+        .card-preview-title {
+            font-size: 18px;
+            font-weight: 800;
+
+            margin-bottom: 5px;
+
+            word-break: break-word;
+        }
+
+        .card-preview-name {
+            font-size: 12px;
+
+            color: var(--muted);
+
+            margin-bottom: 12px;
+
+            word-break: break-word;
+        }
+
+        .card-preview-message {
+            color: var(--text);
+
+            white-space: pre-wrap;
+
+            word-break: break-word;
+
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+
+            overflow: hidden;
+        }
+
+        .card-preview-empty {
+            color: var(--muted);
+
+            font-style: italic;
+        }
+
+        .card-actions {
+            display: flex;
+
+            gap: 10px;
+
+            flex-wrap: wrap;
+        }
+
+        .card-actions .button {
+            flex: 1;
+        }
+
+        .card-meta {
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 4px;
+        }
+
+        @media (max-width: 600px) {
+
+            .card-actions {
+                flex-direction: column;
+            }
+
+        }
+
+    </style>
 
 </head>
 
@@ -23,7 +124,9 @@
 
     <nav>
 
-        <strong>🪪 Card Message System</strong>
+        <strong>
+            🪪 Card Message System
+        </strong>
 
         <div class="nav-links">
 
@@ -53,7 +156,9 @@
 
         <section class="panel">
 
-            <h1>Dashboard</h1>
+            <h1>
+                Dashboard
+            </h1>
 
             <p id="account">
                 Loading account...
@@ -73,20 +178,22 @@
 
                 <div>
 
-                    <h2>Your Cards</h2>
+                    <h2>
+                        Your Cards
+                    </h2>
 
                     <p>
-                        Manage your physical cards and
-                        their connected data.
+                        View and manage your cards
+                        and see what's inside them.
                     </p>
 
                 </div>
 
 
-                <button id="createCardButton">
-
+                <button
+                    id="createCardButton"
+                >
                     ➕ Create New Card
-
                 </button>
 
             </div>
@@ -97,9 +204,7 @@
                 class="card-grid"
                 style="margin-top:24px;"
             >
-
                 Loading cards...
-
             </div>
 
 
@@ -107,7 +212,7 @@
                 id="message"
                 class="status"
             >
-                Ready.
+                Loading...
             </p>
 
         </section>
@@ -117,34 +222,52 @@
 
 
     <script src="config.js"></script>
+
     <script src="supabase.js"></script>
 
 
     <script>
 
         const account =
-            document.getElementById("account");
+            document.getElementById(
+                "account"
+            );
 
 
         const cardsContainer =
-            document.getElementById("cards");
+            document.getElementById(
+                "cards"
+            );
 
 
         const message =
-            document.getElementById("message");
+            document.getElementById(
+                "message"
+            );
 
 
 
         async function loadDashboard() {
 
+            /*
+             * GET USER
+             */
+
             const {
-                data: { user },
+                data: {
+                    user
+                },
                 error: userError
             } =
-                await supabaseClient.auth.getUser();
+                await supabaseClient
+                    .auth
+                    .getUser();
 
 
-            if (userError || !user) {
+            if (
+                userError ||
+                !user
+            ) {
 
                 window.location.href =
                     "auth.html";
@@ -159,14 +282,27 @@
 
 
 
+            /*
+             * GET CARDS
+             */
+
             const {
                 data: cards,
-                error
+                error: cardsError
             } =
                 await supabaseClient
                     .from("cards")
                     .select(
-                        "id, card_code, created_at"
+                        `
+                            id,
+                            card_code,
+                            created_at,
+                            card_data (
+                                id,
+                                data,
+                                updated_at
+                            )
+                        `
                     )
                     .eq(
                         "owner_id",
@@ -180,27 +316,27 @@
                     );
 
 
-
-            if (error) {
+            if (cardsError) {
 
                 cardsContainer.textContent =
                     "Could not load cards: " +
-                    error.message;
-
+                    cardsError.message;
 
                 message.textContent =
                     "There was a problem loading your cards.";
 
-
                 message.className =
                     "status error";
-
 
                 return;
 
             }
 
 
+
+            /*
+             * NO CARDS
+             */
 
             if (
                 !cards ||
@@ -228,6 +364,9 @@
                 message.textContent =
                     "You don't have any cards yet.";
 
+                message.className =
+                    "status";
+
 
                 return;
 
@@ -235,81 +374,247 @@
 
 
 
-            cardsContainer.innerHTML = "";
+            /*
+             * BUILD CARD LIST
+             */
+
+            cardsContainer.innerHTML =
+                "";
+
+
+            cards.forEach(
+                card => {
+
+                    /*
+                     * SUPABASE RETURNS THE
+                     * RELATION AS AN ARRAY
+                     */
+
+                    let cardData =
+                        null;
+
+
+                    if (
+                        Array.isArray(
+                            card.card_data
+                        ) &&
+                        card.card_data.length
+                    ) {
+
+                        cardData =
+                            card.card_data[0];
+
+                    }
+
+
+                    else if (
+                        card.card_data
+                    ) {
+
+                        cardData =
+                            card.card_data;
+
+                    }
+
+
+                    const data =
+                        cardData?.data || {};
+
+
+                    const title =
+                        data.title ||
+                        "Card Message";
+
+
+                    const name =
+                        data.name ||
+                        "";
+
+
+                    const text =
+                        data.text ||
+                        "";
+
+
+                    const cardElement =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    cardElement.className =
+                        "cms-card dashboard-card";
 
 
 
-            cards.forEach(card => {
+                    /*
+                     * CONTENT PREVIEW
+                     */
+
+                    let previewHTML = "";
 
 
-                const cardElement =
-                    document.createElement("div");
+                    if (
+                        title ||
+                        name ||
+                        text
+                    ) {
+
+                        previewHTML = `
+
+                            <div
+                                class="card-preview"
+                            >
+
+                                <div
+                                    class="card-preview-title"
+                                >
+                                    ${escapeHTML(
+                                        title
+                                    )}
+                                </div>
 
 
-                cardElement.className =
-                    "cms-card";
+                                ${
+                                    name
+                                        ? `
+                                            <div
+                                                class="card-preview-name"
+                                            >
+                                                👤
+                                                ${escapeHTML(
+                                                    name
+                                                )}
+                                            </div>
+                                          `
+                                        : ""
+                                }
+
+
+                                ${
+                                    text
+                                        ? `
+                                            <div
+                                                class="card-preview-message"
+                                            >
+                                                ${escapeHTML(
+                                                    text
+                                                )}
+                                            </div>
+                                          `
+                                        : `
+                                            <div
+                                                class="card-preview-empty"
+                                            >
+                                                This card
+                                                doesn't have
+                                                a message yet.
+                                            </div>
+                                          `
+                                }
+
+                            </div>
+
+                        `;
+
+                    }
 
 
 
-                cardElement.innerHTML = `
+                    else {
 
-                    <h3>
-                        🪪 Card
-                    </h3>
+                        previewHTML = `
 
+                            <div
+                                class="card-preview"
+                            >
 
-                    <p>
-                        Code:
-                    </p>
+                                <div
+                                    class="card-preview-empty"
+                                >
+                                    This card is empty.
+                                </div>
 
+                            </div>
 
-                    <span class="card-code">
+                        `;
 
-                        ${card.card_code}
-
-                    </span>
-
-
-                    <p>
-
-                        Created:
-
-                        ${new Date(
-                            card.created_at
-                        ).toLocaleString()}
-
-                    </p>
-
-
-                    <div class="row">
-
-                        <a
-                            class="button"
-                            href="card.html?id=${card.id}"
-                        >
-                            Open Card
-                        </a>
-
-
-                        <a
-                            class="button secondary"
-                            href="card-print.html?id=${card.id}"
-                        >
-                            🖨️ Print
-                        </a>
-
-                    </div>
-
-                `;
+                    }
 
 
 
-                cardsContainer.appendChild(
-                    cardElement
-                );
+                    cardElement.innerHTML = `
 
-            });
+                        <div>
 
+                            <h3>
+                                🪪 Card
+                            </h3>
+
+
+                            <p>
+                                Code:
+                            </p>
+
+
+                            <span
+                                class="card-code"
+                            >
+                                ${escapeHTML(
+                                    card.card_code
+                                )}
+                            </span>
+
+                        </div>
+
+
+                        ${previewHTML}
+
+
+                        <div class="card-meta">
+
+                            <p>
+                                📅 Created:
+                                ${new Date(
+                                    card.created_at
+                                ).toLocaleString()}
+                            </p>
+
+                        </div>
+
+
+                        <div class="card-actions">
+
+                            <a
+                                class="button"
+                                href="card.html?id=${encodeURIComponent(
+                                    card.id
+                                )}"
+                            >
+                                ✏️ Open Card
+                            </a>
+
+
+                            <a
+                                class="button secondary"
+                                href="card-print.html?id=${encodeURIComponent(
+                                    card.id
+                                )}"
+                            >
+                                🎨 Design Card
+                            </a>
+
+                        </div>
+
+                    `;
+
+
+                    cardsContainer.appendChild(
+                        cardElement
+                    );
+
+                }
+            );
 
 
             message.textContent =
@@ -327,8 +632,41 @@
 
 
 
+        /*
+         * HTML ESCAPING
+         *
+         * Prevents card data from being
+         * interpreted as HTML.
+         */
+
+        function escapeHTML(
+            value
+        ) {
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+
+            div.textContent =
+                String(value);
+
+
+            return div.innerHTML;
+
+        }
+
+
+
+        /*
+         * LOG OUT
+         */
+
         document
-            .getElementById("logoutButton")
+            .getElementById(
+                "logoutButton"
+            )
             .addEventListener(
                 "click",
                 async () => {
@@ -346,8 +684,14 @@
 
 
 
+        /*
+         * CREATE CARD
+         */
+
         document
-            .getElementById("createCardButton")
+            .getElementById(
+                "createCardButton"
+            )
             .addEventListener(
                 "click",
                 () => {
@@ -363,7 +707,6 @@
         loadDashboard();
 
     </script>
-
 
 </body>
 
