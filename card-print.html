@@ -51,6 +51,35 @@
             width: 100%;
         }
 
+        .dimension-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .dimension-input {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .dimension-input label {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .preset-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .preset-row button {
+            min-height: 40px;
+            padding: 8px 10px;
+            font-size: 13px;
+        }
+
         .preview-area {
             position: sticky;
             top: 90px;
@@ -66,14 +95,15 @@
                 ) 50% / 20px 20px;
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            overflow: hidden;
+            overflow: auto;
         }
 
         .physical-card {
             width: 600px;
             height: 380px;
-            max-width: 100%;
-            aspect-ratio: 600 / 380;
+
+            min-width: 80px;
+            min-height: 50px;
 
             position: relative;
 
@@ -91,6 +121,8 @@
 
             display: flex;
             flex-direction: column;
+
+            flex-shrink: 0;
         }
 
         .physical-card::after {
@@ -134,6 +166,8 @@
 
             opacity: 0.7;
             font-size: 14px;
+
+            word-break: break-word;
         }
 
         .card-message {
@@ -268,6 +302,10 @@
 
         @media print {
 
+            @page {
+                margin: 0;
+            }
+
             body {
                 background: white !important;
             }
@@ -284,12 +322,12 @@
                 left: 0;
                 top: 0;
 
-                width: 600px;
-                height: 380px;
-
                 margin: 0;
 
                 box-shadow: none;
+
+                max-width: none !important;
+                max-height: none !important;
             }
 
         }
@@ -354,6 +392,127 @@
                     <div class="controls">
 
 
+                        <!-- CARD SIZE -->
+
+                        <div class="control-group">
+
+                            <label>
+                                📏 Card size
+                            </label>
+
+
+                            <div class="preset-row">
+
+                                <button
+                                    type="button"
+                                    class="secondary size-preset"
+                                    data-width="350"
+                                    data-height="220"
+                                >
+                                    Standard
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="secondary size-preset"
+                                    data-width="1013"
+                                    data-height="638"
+                                >
+                                    Business
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="secondary size-preset"
+                                    data-width="794"
+                                    data-height="1123"
+                                >
+                                    A6
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="secondary size-preset"
+                                    data-width="1123"
+                                    data-height="1587"
+                                >
+                                    A5
+                                </button>
+
+                            </div>
+
+
+                            <div
+                                class="dimension-row"
+                                style="margin-top:10px;"
+                            >
+
+                                <div class="dimension-input">
+
+                                    <label for="cardWidth">
+                                        Width (px)
+                                    </label>
+
+                                    <input
+                                        id="cardWidth"
+                                        type="number"
+                                        min="80"
+                                        max="3000"
+                                        value="600"
+                                    >
+
+                                </div>
+
+
+                                <div class="dimension-input">
+
+                                    <label for="cardHeight">
+                                        Height (px)
+                                    </label>
+
+                                    <input
+                                        id="cardHeight"
+                                        type="number"
+                                        min="50"
+                                        max="3000"
+                                        value="380"
+                                    >
+
+                                </div>
+
+                            </div>
+
+
+                            <div
+                                class="switch-row"
+                                style="margin-top:8px;"
+                            >
+
+                                <label for="lockRatio">
+                                    🔒 Lock ratio
+                                </label>
+
+                                <input
+                                    id="lockRatio"
+                                    class="checkbox"
+                                    type="checkbox"
+                                >
+
+                            </div>
+
+
+                            <span
+                                id="dimensionValue"
+                                class="preview-size"
+                            >
+                                600 × 380 px
+                            </span>
+
+                        </div>
+
+
+                        <!-- TITLE -->
+
                         <div class="control-group">
 
                             <label for="titleInput">
@@ -369,6 +528,8 @@
 
                         </div>
 
+
+                        <!-- NAME -->
 
                         <div class="control-group">
 
@@ -386,6 +547,8 @@
                         </div>
 
 
+                        <!-- MESSAGE -->
+
                         <div class="control-group">
 
                             <label for="messageInput">
@@ -402,6 +565,8 @@
                         </div>
 
 
+                        <!-- BACKGROUND -->
+
                         <div class="control-group">
 
                             <label for="backgroundInput">
@@ -417,6 +582,8 @@
                         </div>
 
 
+                        <!-- ACCENT -->
+
                         <div class="control-group">
 
                             <label for="accentInput">
@@ -431,6 +598,8 @@
 
                         </div>
 
+
+                        <!-- TEXT SIZE -->
 
                         <div class="control-group">
 
@@ -456,6 +625,8 @@
                         </div>
 
 
+                        <!-- QR -->
+
                         <div class="switch-row">
 
                             <label for="showQR">
@@ -471,6 +642,8 @@
 
                         </div>
 
+
+                        <!-- CODE -->
 
                         <div class="switch-row">
 
@@ -526,8 +699,7 @@
                                     <div
                                         id="previewName"
                                         class="card-name"
-                                    >
-                                    </div>
+                                    ></div>
 
                                 </div>
 
@@ -559,11 +731,16 @@
 
                     </div>
 
+
                     <p
+                        id="previewDimensions"
                         class="preview-size"
-                        style="text-align:center;margin-top:10px;"
+                        style="
+                            text-align:center;
+                            margin-top:10px;
+                        "
                     >
-                        Live print preview
+                        Live print preview — 600 × 380 px
                     </p>
 
                 </div>
@@ -594,6 +771,7 @@
             new URLSearchParams(
                 window.location.search
             );
+
 
         const cardId =
             params.get("id");
@@ -665,6 +843,36 @@
             );
 
 
+        const cardWidth =
+            document.getElementById(
+                "cardWidth"
+            );
+
+
+        const cardHeight =
+            document.getElementById(
+                "cardHeight"
+            );
+
+
+        const lockRatio =
+            document.getElementById(
+                "lockRatio"
+            );
+
+
+        const dimensionValue =
+            document.getElementById(
+                "dimensionValue"
+            );
+
+
+        const previewDimensions =
+            document.getElementById(
+                "previewDimensions"
+            );
+
+
         const previewTitle =
             document.getElementById(
                 "previewTitle"
@@ -696,6 +904,124 @@
 
 
         let cardCode = "";
+
+
+        let lockedRatio =
+            600 / 380;
+
+
+
+        function updateDimensions(
+            changed
+        ) {
+
+            let width =
+                parseInt(
+                    cardWidth.value,
+                    10
+                );
+
+
+            let height =
+                parseInt(
+                    cardHeight.value,
+                    10
+                );
+
+
+            if (
+                !Number.isFinite(width) ||
+                width < 80
+            ) {
+
+                width = 80;
+
+                cardWidth.value =
+                    width;
+
+            }
+
+
+            if (
+                !Number.isFinite(height) ||
+                height < 50
+            ) {
+
+                height = 50;
+
+                cardHeight.value =
+                    height;
+
+            }
+
+
+            if (
+                lockRatio.checked
+            ) {
+
+                if (
+                    changed === "width"
+                ) {
+
+                    height =
+                        Math.round(
+                            width /
+                            lockedRatio
+                        );
+
+                    height =
+                        Math.max(
+                            50,
+                            Math.min(
+                                3000,
+                                height
+                            )
+                        );
+
+                    cardHeight.value =
+                        height;
+
+                } else {
+
+                    width =
+                        Math.round(
+                            height *
+                            lockedRatio
+                        );
+
+                    width =
+                        Math.max(
+                            80,
+                            Math.min(
+                                3000,
+                                width
+                            )
+                        );
+
+                    cardWidth.value =
+                        width;
+
+                }
+
+            }
+
+
+            printCard.style.width =
+                width + "px";
+
+
+            printCard.style.height =
+                height + "px";
+
+
+            dimensionValue.textContent =
+                `${width} × ${height} px`;
+
+
+            previewDimensions.textContent =
+                `Live print preview — ${width} × ${height} px`;
+
+        }
 
 
 
@@ -743,6 +1069,9 @@
                 showCode.checked
                     ? "block"
                     : "none";
+
+
+            updateDimensions();
 
         }
 
@@ -897,6 +1226,107 @@
         }
 
 
+
+        /*
+         * DIMENSION CONTROLS
+         */
+
+        cardWidth.addEventListener(
+            "input",
+            () => {
+
+                updateDimensions(
+                    "width"
+                );
+
+            }
+        );
+
+
+        cardHeight.addEventListener(
+            "input",
+            () => {
+
+                updateDimensions(
+                    "height"
+                );
+
+            }
+        );
+
+
+        lockRatio.addEventListener(
+            "change",
+            () => {
+
+                if (
+                    lockRatio.checked
+                ) {
+
+                    lockedRatio =
+                        parseInt(
+                            cardWidth.value,
+                            10
+                        ) /
+                        parseInt(
+                            cardHeight.value,
+                            10
+                        );
+
+                }
+
+            }
+        );
+
+
+        document
+            .querySelectorAll(
+                ".size-preset"
+            )
+            .forEach(
+                button => {
+
+                    button.addEventListener(
+                        "click",
+                        () => {
+
+                            const width =
+                                parseInt(
+                                    button.dataset.width,
+                                    10
+                                );
+
+                            const height =
+                                parseInt(
+                                    button.dataset.height,
+                                    10
+                                );
+
+
+                            cardWidth.value =
+                                width;
+
+                            cardHeight.value =
+                                height;
+
+
+                            lockedRatio =
+                                width /
+                                height;
+
+
+                            updateDimensions();
+
+                        }
+                    );
+
+                }
+            );
+
+
+        /*
+         * LIVE PREVIEW CONTROLS
+         */
 
         titleInput.addEventListener(
             "input",
