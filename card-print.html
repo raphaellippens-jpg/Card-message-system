@@ -365,8 +365,6 @@
 <body>
 
 
-    <!-- NAVIGATION -->
-
     <nav>
 
         <strong>
@@ -432,8 +430,6 @@
 
                     <div class="controls">
 
-
-                        <!-- SIZE -->
 
                         <h3 class="section-title">
                             📏 Card Size
@@ -551,8 +547,6 @@
 
                         </div>
 
-
-                        <!-- CONTENT -->
 
                         <h3 class="section-title">
                             ✏️ Content
@@ -695,8 +689,6 @@
                         </div>
 
 
-                        <!-- QR -->
-
                         <h3 class="section-title">
                             📱 QR Code
                         </h3>
@@ -745,8 +737,6 @@
                         </div>
 
 
-                        <!-- CODE -->
-
                         <h3 class="section-title">
                             🔢 Card Code
                         </h3>
@@ -769,8 +759,6 @@
                         </div>
 
 
-                        <!-- ACCESS -->
-
                         <h3 class="section-title">
                             🔐 Access
                         </h3>
@@ -791,8 +779,6 @@
 
                         </div>
 
-
-                        <!-- TEXT SIZES -->
 
                         <h3 class="section-title">
                             🔤 Text Sizes
@@ -902,8 +888,6 @@
 
                         </div>
 
-
-                        <!-- APPEARANCE -->
 
                         <h3 class="section-title">
                             🖼️ Appearance
@@ -1027,8 +1011,6 @@
                         </div>
 
 
-                        <!-- LAYOUT -->
-
                         <h3 class="section-title">
                             🪪 Layout
                         </h3>
@@ -1058,8 +1040,6 @@
                         </select>
 
 
-                        <!-- RESET -->
-
                         <button
                             id="resetPositions"
                             type="button"
@@ -1078,8 +1058,6 @@
 
                         </div>
 
-
-                        <!-- ACTIONS -->
 
                         <div class="save-row">
 
@@ -1106,10 +1084,6 @@
 
                 </div>
 
-
-                <!-- ================================================= -->
-                <!-- PREVIEW -->
-                <!-- ================================================= -->
 
                 <div>
 
@@ -1230,13 +1204,6 @@
 
     <script>
 
-
-        /*
-         * ==========================================================
-         * URL
-         * ==========================================================
-         */
-
         const params =
             new URLSearchParams(
                 window.location.search
@@ -1247,251 +1214,164 @@
             params.get("id");
 
 
-
-        /*
-         * ==========================================================
-         * ELEMENTS
-         * ==========================================================
-         */
-
         const status =
-            document.getElementById(
-                "status"
-            );
+            document.getElementById("status");
 
 
         const printCard =
-            document.getElementById(
-                "printCard"
-            );
+            document.getElementById("printCard");
 
 
         const cardStage =
-            document.getElementById(
-                "cardStage"
-            );
+            document.getElementById("cardStage");
 
 
         const widthSlider =
-            document.getElementById(
-                "widthSlider"
-            );
+            document.getElementById("widthSlider");
 
 
         const heightSlider =
-            document.getElementById(
-                "heightSlider"
-            );
+            document.getElementById("heightSlider");
 
 
         const widthValue =
-            document.getElementById(
-                "widthValue"
-            );
+            document.getElementById("widthValue");
 
 
         const heightValue =
-            document.getElementById(
-                "heightValue"
-            );
+            document.getElementById("heightValue");
 
 
         const lockRatio =
-            document.getElementById(
-                "lockRatio"
-            );
+            document.getElementById("lockRatio");
 
 
         const titleInput =
-            document.getElementById(
-                "titleInput"
-            );
+            document.getElementById("titleInput");
 
 
         const nameInput =
-            document.getElementById(
-                "nameInput"
-            );
+            document.getElementById("nameInput");
 
 
         const extraTextInput =
-            document.getElementById(
-                "extraTextInput"
-            );
+            document.getElementById("extraTextInput");
 
 
         const messageInput =
-            document.getElementById(
-                "messageInput"
-            );
+            document.getElementById("messageInput");
 
 
         const showTitle =
-            document.getElementById(
-                "showTitle"
-            );
+            document.getElementById("showTitle");
 
 
         const showName =
-            document.getElementById(
-                "showName"
-            );
+            document.getElementById("showName");
 
 
         const showExtra =
-            document.getElementById(
-                "showExtra"
-            );
+            document.getElementById("showExtra");
 
 
         const showMessage =
-            document.getElementById(
-                "showMessage"
-            );
+            document.getElementById("showMessage");
 
 
         const showQR =
-            document.getElementById(
-                "showQR"
-            );
+            document.getElementById("showQR");
 
 
         const showCode =
-            document.getElementById(
-                "showCode"
-            );
+            document.getElementById("showCode");
 
 
         const showAuthorized =
-            document.getElementById(
-                "showAuthorized"
-            );
+            document.getElementById("showAuthorized");
 
 
         const qrSize =
-            document.getElementById(
-                "qrSize"
-            );
+            document.getElementById("qrSize");
 
 
         const titleSize =
-            document.getElementById(
-                "titleSize"
-            );
+            document.getElementById("titleSize");
 
 
         const smallSize =
-            document.getElementById(
-                "smallSize"
-            );
+            document.getElementById("smallSize");
 
 
         const messageSize =
-            document.getElementById(
-                "messageSize"
-            );
+            document.getElementById("messageSize");
 
 
         const codeSize =
-            document.getElementById(
-                "codeSize"
-            );
+            document.getElementById("codeSize");
 
 
         const backgroundInput =
-            document.getElementById(
-                "backgroundInput"
-            );
+            document.getElementById("backgroundInput");
 
 
         const accentInput =
-            document.getElementById(
-                "accentInput"
-            );
+            document.getElementById("accentInput");
 
 
         const borderWidth =
-            document.getElementById(
-                "borderWidth"
-            );
+            document.getElementById("borderWidth");
 
 
         const borderColor =
-            document.getElementById(
-                "borderColor"
-            );
+            document.getElementById("borderColor");
 
 
         const borderRadius =
-            document.getElementById(
-                "borderRadius"
-            );
+            document.getElementById("borderRadius");
 
 
         const showShadow =
-            document.getElementById(
-                "showShadow"
-            );
+            document.getElementById("showShadow");
 
 
         const layoutSelect =
-            document.getElementById(
-                "layoutSelect"
-            );
+            document.getElementById("layoutSelect");
 
 
         const previewTitle =
-            document.getElementById(
-                "previewTitle"
-            );
+            document.getElementById("previewTitle");
 
 
         const previewName =
-            document.getElementById(
-                "previewName"
-            );
+            document.getElementById("previewName");
 
 
         const previewExtra =
-            document.getElementById(
-                "previewExtra"
-            );
+            document.getElementById("previewExtra");
 
 
         const previewMessage =
-            document.getElementById(
-                "previewMessage"
-            );
+            document.getElementById("previewMessage");
 
 
         const qrContainer =
-            document.getElementById(
-                "qrContainer"
-            );
+            document.getElementById("qrContainer");
 
 
         const previewCode =
-            document.getElementById(
-                "previewCode"
-            );
+            document.getElementById("previewCode");
 
 
         const authorizedBadge =
-            document.getElementById(
-                "authorizedBadge"
-            );
+            document.getElementById("authorizedBadge");
 
 
         const previewDimensions =
-            document.getElementById(
-                "previewDimensions"
-            );
+            document.getElementById("previewDimensions");
 
 
         const saveButton =
-            document.getElementById(
-                "saveButton"
-            );
+            document.getElementById("saveButton");
 
 
         const downloadPNGButton =
@@ -1499,13 +1379,6 @@
                 "downloadPNGButton"
             );
 
-
-
-        /*
-         * ==========================================================
-         * STATE
-         * ==========================================================
-         */
 
         let cardCode = "";
 
@@ -1557,13 +1430,6 @@
         };
 
 
-
-        /*
-         * ==========================================================
-         * CLAMP
-         * ==========================================================
-         */
-
         function clamp(
             value,
             min,
@@ -1580,13 +1446,6 @@
 
         }
 
-
-
-        /*
-         * ==========================================================
-         * CARD SIZE
-         * ==========================================================
-         */
 
         function updateCardSize(
             changed
@@ -1717,13 +1576,6 @@
         }
 
 
-
-        /*
-         * ==========================================================
-         * POSITIONS
-         * ==========================================================
-         */
-
         function renderPositions() {
 
             Object.keys(
@@ -1754,13 +1606,6 @@
 
         }
 
-
-
-        /*
-         * ==========================================================
-         * DRAGGING
-         * ==========================================================
-         */
 
         function makeDraggable(
             element
@@ -1945,15 +1790,7 @@
         }
 
 
-
-        /*
-         * ==========================================================
-         * PREVIEW
-         * ==========================================================
-         */
-
         function updatePreview() {
-
 
             previewTitle.textContent =
                 titleInput.value ||
@@ -2175,13 +2012,6 @@
         }
 
 
-
-        /*
-         * ==========================================================
-         * QR
-         * ==========================================================
-         */
-
         function createQR() {
 
             qrContainer.innerHTML =
@@ -2223,13 +2053,6 @@
 
         }
 
-
-
-        /*
-         * ==========================================================
-         * DESIGN DATA
-         * ==========================================================
-         */
 
         function getDesignData() {
 
@@ -2330,13 +2153,6 @@
 
         }
 
-
-
-        /*
-         * ==========================================================
-         * SAVE DESIGN
-         * ==========================================================
-         */
 
         async function saveDesign() {
 
@@ -2458,13 +2274,6 @@
 
         }
 
-
-
-        /*
-         * ==========================================================
-         * LOAD SAVED DESIGN
-         * ==========================================================
-         */
 
         function loadSavedDesign(
             design
@@ -2853,13 +2662,6 @@
         }
 
 
-
-        /*
-         * ==========================================================
-         * LOAD CARD
-         * ==========================================================
-         */
-
         async function loadCard() {
 
             if (!cardId) {
@@ -2960,10 +2762,6 @@
                 );
 
 
-            /*
-             * LOAD DATA
-             */
-
             const {
                 data: cardData,
                 error: dataError
@@ -2997,10 +2795,6 @@
             currentCardData =
                 cardData?.data || {};
 
-
-            /*
-             * CONTENT
-             */
 
             if (
                 typeof currentCardData.title ===
@@ -3053,25 +2847,13 @@
             }
 
 
-            /*
-             * SAVED DESIGN
-             */
-
             loadSavedDesign(
                 currentCardData.design
             );
 
 
-            /*
-             * QR
-             */
-
             createQR();
 
-
-            /*
-             * PREVIEW
-             */
 
             updatePreview();
 
@@ -3090,13 +2872,6 @@
 
         }
 
-
-
-        /*
-         * ==========================================================
-         * RESET POSITIONS
-         * ==========================================================
-         */
 
         document
             .getElementById(
@@ -3196,13 +2971,6 @@
             );
 
 
-
-        /*
-         * ==========================================================
-         * SIZE EVENTS
-         * ==========================================================
-         */
-
         widthSlider.addEventListener(
             "input",
             () => {
@@ -3249,13 +3017,6 @@
         );
 
 
-
-        /*
-         * ==========================================================
-         * PRESETS
-         * ==========================================================
-         */
-
         document
             .querySelectorAll(
                 "[data-width]"
@@ -3300,13 +3061,6 @@
                 }
             );
 
-
-
-        /*
-         * ==========================================================
-         * NORMAL CONTROLS
-         * ==========================================================
-         */
 
         [
 
@@ -3362,13 +3116,6 @@
         );
 
 
-
-        /*
-         * ==========================================================
-         * DRAGGABLE ELEMENTS
-         * ==========================================================
-         */
-
         document
             .querySelectorAll(
                 ".drag-item"
@@ -3378,23 +3125,15 @@
             );
 
 
-
-        /*
-         * ==========================================================
-         * SAVE BUTTON
-         * ==========================================================
-         */
-
         saveButton.addEventListener(
             "click",
             saveDesign
         );
 
 
-
         /*
          * ==========================================================
-         * PNG EXPORT
+         * PNG EXPORT — FIXED
          * ==========================================================
          */
 
@@ -3405,10 +3144,8 @@
                 downloadPNGButton.disabled =
                     true;
 
-
                 downloadPNGButton.textContent =
                     "🖼️ Creating PNG...";
-
 
                 status.textContent =
                     "Creating high-resolution PNG...";
@@ -3420,47 +3157,96 @@
                 try {
 
                     /*
-                     * Make sure the latest
-                     * design is rendered.
+                     * Render the latest state first.
                      */
 
                     updatePreview();
-
-
                     renderPositions();
 
 
                     /*
-                     * Give the browser a moment
-                     * to finish rendering the QR.
+                     * Wait for the browser to finish
+                     * updating the preview and QR.
                      */
 
                     await new Promise(
                         resolve =>
-                            setTimeout(
-                                resolve,
-                                150
+                            requestAnimationFrame(
+                                () => {
+
+                                    requestAnimationFrame(
+                                        resolve
+                                    );
+
+                                }
                             )
                     );
 
 
                     /*
-                     * 4× resolution.
+                     * The designer dimensions are the
+                     * actual logical card dimensions.
+                     */
+
+                    const cardWidth =
+                        printCard.offsetWidth;
+
+
+                    const cardHeight =
+                        printCard.offsetHeight;
+
+
+                    /*
+                     * Export at 4× resolution.
                      *
-                     * 600 × 380 becomes
-                     * 2400 × 1520.
+                     * Example:
+                     *
+                     * 600 × 380
+                     *      ↓
+                     * 2400 × 1520
                      */
 
                     const scale = 4;
 
 
-                    const canvas =
+                    const exportWidth =
+                        cardWidth * scale;
+
+
+                    const exportHeight =
+                        cardHeight * scale;
+
+
+                    /*
+                     * Ask html2canvas to render the card
+                     * directly at the required resolution.
+                     */
+
+                    const renderedCanvas =
                         await html2canvas(
                             printCard,
                             {
 
                                 scale:
                                     scale,
+
+                                width:
+                                    cardWidth,
+
+                                height:
+                                    cardHeight,
+
+                                windowWidth:
+                                    Math.max(
+                                        document.documentElement.clientWidth,
+                                        cardWidth
+                                    ),
+
+                                windowHeight:
+                                    Math.max(
+                                        document.documentElement.clientHeight,
+                                        cardHeight
+                                    ),
 
                                 backgroundColor:
                                     null,
@@ -3474,109 +3260,159 @@
                                 logging:
                                     false,
 
-                                width:
-                                    printCard.offsetWidth,
-
-                                height:
-                                    printCard.offsetHeight
+                                imageTimeout:
+                                    0
 
                             }
                         );
 
 
                     /*
-                     * Create PNG blob.
+                     * Create a guaranteed-size export canvas.
                      */
 
-                    canvas.toBlob(
-                        blob => {
+                    const exportCanvas =
+                        document.createElement(
+                            "canvas"
+                        );
 
-                            if (!blob) {
 
-                                status.textContent =
-                                    "Could not create PNG.";
+                    exportCanvas.width =
+                        exportWidth;
 
-                                status.className =
-                                    "status error";
 
-                                downloadPNGButton.disabled =
-                                    false;
+                    exportCanvas.height =
+                        exportHeight;
 
-                                downloadPNGButton.textContent =
-                                    "🖼️ Download PNG";
 
-                                return;
+                    const context =
+                        exportCanvas.getContext(
+                            "2d"
+                        );
+
+
+                    if (!context) {
+
+                        throw new Error(
+                            "Could not create canvas context."
+                        );
+
+                    }
+
+
+                    /*
+                     * Draw the rendered card into the
+                     * exact 4× output dimensions.
+                     */
+
+                    context.drawImage(
+                        renderedCanvas,
+
+                        0,
+                        0,
+
+                        renderedCanvas.width,
+                        renderedCanvas.height,
+
+                        0,
+                        0,
+
+                        exportWidth,
+                        exportHeight
+                    );
+
+
+                    /*
+                     * Convert to PNG.
+                     */
+
+                    const blob =
+                        await new Promise(
+                            (resolve, reject) => {
+
+                                exportCanvas.toBlob(
+                                    result => {
+
+                                        if (result) {
+
+                                            resolve(
+                                                result
+                                            );
+
+                                        }
+
+                                        else {
+
+                                            reject(
+                                                new Error(
+                                                    "PNG conversion failed."
+                                                )
+                                            );
+
+                                        }
+
+                                    },
+
+                                    "image/png"
+                                );
 
                             }
+                        );
 
 
-                            const url =
-                                URL.createObjectURL(
-                                    blob
-                                );
+                    /*
+                     * Download.
+                     */
+
+                    const url =
+                        URL.createObjectURL(
+                            blob
+                        );
 
 
-                            const link =
-                                document.createElement(
-                                    "a"
-                                );
+                    const link =
+                        document.createElement(
+                            "a"
+                        );
 
 
-                            link.href =
-                                url;
+                    link.href =
+                        url;
 
 
-                            link.download =
-                                `card-${cardCode || "design"}.png`;
+                    link.download =
+                        `card-${cardCode || "design"}-${cardWidth}x${cardHeight}-${scale}x.png`;
 
 
-                            document.body.appendChild(
-                                link
+                    document.body.appendChild(
+                        link
+                    );
+
+
+                    link.click();
+
+
+                    link.remove();
+
+
+                    setTimeout(
+                        () => {
+
+                            URL.revokeObjectURL(
+                                url
                             );
-
-
-                            link.click();
-
-
-                            link.remove();
-
-
-                            /*
-                             * Give the browser time
-                             * to start the download.
-                             */
-
-                            setTimeout(
-                                () => {
-
-                                    URL.revokeObjectURL(
-                                        url
-                                    );
-
-                                },
-                                1000
-                            );
-
-
-                            status.textContent =
-                                "✅ PNG created successfully.";
-
-                            status.className =
-                                "status success";
-
-
-                            downloadPNGButton.disabled =
-                                false;
-
-
-                            downloadPNGButton.textContent =
-                                "🖼️ Download PNG";
 
                         },
-
-                        "image/png"
-
+                        1000
                     );
+
+
+                    status.textContent =
+                        `✅ PNG created: ${exportWidth} × ${exportHeight} px`;
+
+                    status.className =
+                        "status success";
+
 
                 }
 
@@ -3594,6 +3430,10 @@
                     status.className =
                         "status error";
 
+                }
+
+
+                finally {
 
                     downloadPNGButton.disabled =
                         false;
@@ -3607,13 +3447,6 @@
             }
         );
 
-
-
-        /*
-         * ==========================================================
-         * START
-         * ==========================================================
-         */
 
         loadCard();
 
